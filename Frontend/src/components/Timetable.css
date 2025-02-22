@@ -256,3 +256,25 @@
 .active-timetable {
   animation: slideInUp 0.5s ease-out;
 }
+
+.substitute-cell {
+  border: 2px solid #4CAF50;
+}
+
+.substitute-teacher {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.absent-teacher {
+  color: #f44336;
+  text-decoration: line-through;
+}
+
+.timetable-cell {
+  cursor: pointer;
+}
+
+.saturday-cell {
+  cursor: default;
+}

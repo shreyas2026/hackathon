@@ -81,7 +81,7 @@ const PrimarySchoolProfile = () => {
             </span>
           </div>
           <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-            Mr Prajwal Revanna, M.Ed.
+            Mr Prajwal    M.Ed.
           </h2>
           <p className="text-xl text-gray-600">Principal</p>
           <div
