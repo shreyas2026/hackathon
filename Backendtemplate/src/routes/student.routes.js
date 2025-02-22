@@ -5,6 +5,7 @@ import { getExistingMarksByStudentId, getStudentAttendanceByStudentId, getStuden
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 import { getEnrolledSubjects } from '../controllers/studentControllers/studentListByClass.controllers.js';
 import {Subject} from '../models/Subject.models.js'; 
+import { getClassDetailsWithAttendance } from '../controllers/studentControllers/studentattd.controllers.js';
 import { addStudentAttendance } from '../controllers/studentControllers/studentattd.controllers.js';
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.post('/addStudent', addStudent);
 router.route('/addMarks').post(verifyJWT, addMarks); 
 router.route('/getExistingMarks').get(verifyJWT, getExistingMarks);
 router.post('/getStudentListByClass', getStudentListByClass);
+router.post('/getAttendanceByClass', getClassDetailsWithAttendance)
 router.get('/getEnrolledSubjects/:studentId', getEnrolledSubjects); 
 
 router.get('/subjects', async (req, res) => {
