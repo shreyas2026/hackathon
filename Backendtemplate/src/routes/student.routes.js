@@ -1,7 +1,7 @@
 import express from 'express';
 import { addMarks, getExistingMarks } from '../controllers/studentControllers/marks.controllers.js';
 import { addStudent } from '../controllers/studentControllers/addStudent.controllers.js';
-import { getStudentListByClass } from '../controllers/studentControllers/studentListByClass.controllers.js';
+import { getExistingMarksByStudentId, getStudentAttendanceByStudentId, getStudentById, getStudentListByClass } from '../controllers/studentControllers/studentListByClass.controllers.js';
 import { verifyJWT } from '../middlewares/auth.middlewares.js';
 import { getEnrolledSubjects } from '../controllers/studentControllers/studentListByClass.controllers.js';
 import {Subject} from '../models/Subject.models.js'; 
@@ -29,4 +29,7 @@ router.get('/subjects', async (req, res) => {
 router.post('/addMarks', addMarks);
 router.post("/getstudents",getStudentListByClass)
 router.post("/addattendance",addStudentAttendance)
+router.get('/getStudentById/:studentId',getStudentById)
+router.get('/getExistingMarksByStudentId/:studentId',getExistingMarksByStudentId)
+router.get('/getStudentAttendanceByStudentId/:studentId',getStudentAttendanceByStudentId)
 export default router;

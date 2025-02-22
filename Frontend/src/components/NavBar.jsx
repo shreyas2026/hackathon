@@ -22,6 +22,14 @@ function NavBar() {
           <NavLink to="/teacher/lessonPlan" className="flex items-center gap-2 text-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-white/50 p-2 rounded-lg">
             Lesson Plan
           </NavLink>
+
+          <NavLink to="/teacher/studentPerformance" className="flex items-center gap-2 text-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-white/50 p-2 rounded-lg">
+            Student
+          </NavLink>
+
+          <NavLink to="/teacher/upcomingExams" className="flex items-center gap-2 text-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-white/50 p-2 rounded-lg">
+            Upcoming exams
+          </NavLink>
         </div>
       </div>
     </nav>

@@ -10,12 +10,14 @@ import TeacherDashboard from './components/teacherDashboard.jsx';
 import TeacherProfile from './components/TeacherProfile.jsx';
 import TeacherAttendance from './components/TeacherAttendance.jsx';
 import TeacherMarks from './components/TeacherMarks.jsx';
-import TeacherLessonPlan from './components/teacherLessonPlan.jsx';
 import HMDashboard from './components/HMDashboard.jsx';
 import HMProfile from './components/HMProfile.jsx';
 import HMManageTeachers from './components/HMManageTeachers.jsx';
 import ManageExamsAndInvigilators from './components/HMManageExams.jsx';
 import HMManageTimeTable from './components/HMManageTimeTable.jsx';
+import StudentListManager from './components/StudentListManager.jsx';
+import TeacherLessonPlan from './components/TeacherLessonPlan.jsx';
+import TeacherUpcomingExams from './components/teacherUpcomingExams.jsx';
 
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
           <Route path="attendance" element={<TeacherAttendance />} /> 
           <Route path="marks" element={<TeacherMarks/>}/>
           <Route path="lessonPlan" element={<TeacherLessonPlan/>}/>
+          <Route path='studentPerformance' element={<StudentListManager/>}/>
+          <Route path='upcomingExams' element={<TeacherUpcomingExams/>}/>
         </Route>
         <Route path="/hm" element={<HMDashboard />}>
           <Route index element={<HMProfile />} />
