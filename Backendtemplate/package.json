@@ -36,6 +36,7 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.4.3",
         "mongoose-aggregate-paginate-v2": "^1.1.0",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "twilio": "^5.4.5"
     }
 }

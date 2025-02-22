@@ -3,12 +3,10 @@ import {
   Users, 
   Calendar as CalendarIcon, 
   Loader2,
-  ArrowLeft,
   Search,
   CheckCircle,
   XCircle,
-  UserCheck,
-  UsersIcon
+  Send
 } from "lucide-react";
 
 const ViewAttendance = () => {
@@ -17,6 +15,7 @@ const ViewAttendance = () => {
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [sendingSMS, setSendingSMS] = useState({});
 
   const classes = [
     { id: "1", name: "10A" },
@@ -42,7 +41,7 @@ const ViewAttendance = () => {
           date: selectedDate.toISOString().split('T')[0]
         })
       });
-      
+
       const data = await response.json();
       
       if (data.students) {
@@ -58,12 +57,39 @@ const ViewAttendance = () => {
     setIsLoading(false);
   };
 
-  // Calculate attendance statistics
-  const totalStudents = students.length;
-  const presentStudents = students.filter(student => student.attendanceStatus === "true").length;
-  const attendancePercentage = totalStudents > 0 
-    ? Math.round((presentStudents / totalStudents) * 100) 
-    : 0;
+  const sendSMS = async (student) => {
+    if (!student.phone_no) {
+      alert("Phone number not available for this student.");
+      return;
+    }
+
+    setSendingSMS((prev) => ({ ...prev, [student._id]: true }));
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/sms/send-sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: student.phone_no,
+          studentName: student.name,
+          attendanceStatus: student.attendanceStatus === "true"
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to send SMS");
+      }
+
+      alert(`SMS sent successfully to ${student.phone_no}`);
+    } catch (error) {
+      console.error("Failed to send SMS:", error);
+      alert(error.message || "Failed to send SMS. Please try again.");
+    } finally {
+      setSendingSMS((prev) => ({ ...prev, [student._id]: false }));
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -125,37 +151,18 @@ const ViewAttendance = () => {
           </div>
 
           {students.length > 0 && (
-            <>
-              {/* Attendance Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-70 mb-6">
-                <div className="bg-blue-50 rounded-lg p-4 flex items-center justify-between">
+            <div className="space-y-3">
+              {students.map((student) => (
+                <div
+                  key={student._id}
+                  className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+                >
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">Total Students</p>
-                    <p className="text-2xl font-bold text-blue-700">{totalStudents}</p>
+                    <p className="font-medium text-gray-900">{student.name}</p>
+                    <p className="text-sm text-gray-600">Roll No: {student.roll_no}</p>
+                    <p className="text-sm text-gray-600">Phone: {student.phone_no || "N/A"}</p>
                   </div>
-                  <UsersIcon className="w-8 h-8 text-blue-500" />
-                </div>
-
-                <div className="bg-green-50 rounded-lg p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-green-600 font-medium">Present Students</p>
-                    <p className="text-2xl font-bold text-green-700">{presentStudents}</p>
-                  </div>
-                  <UserCheck className="w-8 h-8 text-green-500" />
-                </div>
-              </div>
-
-              {/* Student List */}
-              <div className="space-y-3">
-                {students.map((student) => (
-                  <div
-                    key={student._id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">{student.name}</p>
-                      <p className="text-sm text-gray-600">Roll No: {student.roll_no}</p>
-                    </div>
+                  <div className="flex items-center gap-4">
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
                       student.attendanceStatus === "true" 
                         ? "bg-green-100 text-green-700" 
@@ -178,10 +185,27 @@ const ViewAttendance = () => {
                           : "Not Recorded"}
                       </span>
                     </div>
+                    <button 
+                      onClick={() => sendSMS(student)}
+                      className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2 disabled:bg-gray-300"
+                      disabled={sendingSMS[student._id]}
+                    >
+                      {sendingSMS[student._id] ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          Send SMS
+                        </>
+                      )}
+                    </button>
                   </div>
-                ))}
-              </div>
-            </>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

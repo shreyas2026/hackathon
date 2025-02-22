@@ -1,0 +1,217 @@
+import { LessonPlan } from '../../models/LessonPlan.models.js';
+import { ApiError } from '../../utils/ApiError.js';
+import { ApiResponse } from '../../utils/ApiResponse.js';
+import { asyncHandler } from '../../utils/asyncHandler.js';
+
+// Create new lesson plan
+export const createLessonPlan = asyncHandler(async (req, res) => {
+    console.log("came to create lesson plan");
+    
+    const {
+        title,
+        subject,
+        grade,
+        section,
+        date,
+        duration,
+        learningObjectives,
+        prerequisiteKnowledge,
+        teachingMethods,
+        materials,
+        lessonStructure,
+        homework,
+        differentiation,
+        reflection,
+        status
+    } = req.body;
+
+    // Validation
+    if (!title || !subject || !grade || !section || !date || !duration) {
+        throw new ApiError(400, "Missing required fields");
+    }
+
+    // Create lesson plan
+    const lessonPlan = await LessonPlan.create({
+        ...req.body,
+        teacher: req.user._id
+    });
+
+    return res.status(201).json(
+        new ApiResponse(201, lessonPlan, "Lesson plan created successfully")
+    );
+});
+
+// Get all lesson plans for a teacher with filters
+export const getLessonPlans = asyncHandler(async (req, res) => {
+    console.log("came to getLessonPlans");
+    
+    const {
+        status,
+        subject,
+        grade,
+        section,
+        startDate,
+        endDate,
+        page = 1,
+        limit = 10
+    } = req.query;
+
+    const filter = { teacher: req.user._id };
+
+    // Apply filters
+    if (status) filter.status = status;
+    if (subject) filter.subject = subject;
+    if (grade) filter.grade = grade;
+    if (section) filter.section = section;
+    if (startDate || endDate) {
+        filter.date = {};
+        if (startDate) filter.date.$gte = new Date(startDate);
+        if (endDate) filter.date.$lte = new Date(endDate);
+    }
+
+    const skip = (page - 1) * limit;
+
+    const lessonPlans = await LessonPlan.find(filter)
+        .sort({ date: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const total = await LessonPlan.countDocuments(filter);
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            lessonPlans,
+            pagination: {
+                total,
+                page: parseInt(page),
+                pages: Math.ceil(total / limit)
+            }
+        }, "Lesson plans retrieved successfully")
+    );
+});
+
+// Get lesson plan by ID
+export const getLessonPlanById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const lessonPlan = await LessonPlan.findOne({
+        _id: id,
+        teacher: req.user._id
+    });
+
+    if (!lessonPlan) {
+        throw new ApiError(404, "Lesson plan not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, lessonPlan, "Lesson plan retrieved successfully")
+    );
+});
+
+// Update lesson plan
+export const updateLessonPlan = asyncHandler(async (req, res) => {
+    console.log("came to updateLessonPlan");
+    
+    const { id } = req.params;
+    const updates = req.body;
+
+    const lessonPlan = await LessonPlan.findOneAndUpdate(
+        { _id: id, teacher: req.user._id },
+        { 
+            ...updates,
+            lastModified: Date.now()
+        },
+        { new: true, runValidators: true }
+    );
+
+    if (!lessonPlan) {
+        throw new ApiError(404, "Lesson plan not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, lessonPlan, "Lesson plan updated successfully")
+    );
+});
+
+// Delete lesson plan
+export const deleteLessonPlan = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const lessonPlan = await LessonPlan.findOneAndDelete({
+        _id: id,
+        teacher: req.user._id
+    });
+
+    if (!lessonPlan) {
+        throw new ApiError(404, "Lesson plan not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Lesson plan deleted successfully")
+    );
+});
+
+// Change lesson plan status
+export const updateLessonPlanStatus = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { status, comments } = req.body;
+
+    if (!['Draft', 'Pending', 'Approved', 'Completed', 'Cancelled'].includes(status)) {
+        throw new ApiError(400, "Invalid status");
+    }
+
+    const updateData = {
+        status,
+        lastModified: Date.now()
+    };
+
+    // If status is being set to Approved, add approval details
+    if (status === 'Approved') {
+        updateData.approvalDetails = {
+            approvedBy: req.user._id,
+            approvedAt: Date.now(),
+            comments
+        };
+    }
+
+    const lessonPlan = await LessonPlan.findOneAndUpdate(
+        { _id: id, teacher: req.user._id },
+        updateData,
+        { new: true }
+    );
+
+    if (!lessonPlan) {
+        throw new ApiError(404, "Lesson plan not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, lessonPlan, "Lesson plan status updated successfully")
+    );
+});
+
+// Get lesson plan statistics
+export const getLessonPlanStats = asyncHandler(async (req, res) => {
+    const stats = await LessonPlan.aggregate([
+        { $match: { teacher: req.user._id } },
+        {
+            $group: {
+                _id: '$status',
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    const subjectStats = await LessonPlan.aggregate([
+        { $match: { teacher: req.user._id } },
+        {
+            $group: {
+                _id: '$subject',
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    return res.status(200).json(
+        new ApiResponse(200, { statusStats: stats, subjectStats }, "Statistics retrieved successfully")
+    );
+});

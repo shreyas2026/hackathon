@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken"
 import { User } from "../models/user.models.js"
 
 export const verifyJWT = async(req, res, next) => {
+    console.log("came to JWT");
+    
     try {
         // Check both cookies and Authorization header for the token
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")

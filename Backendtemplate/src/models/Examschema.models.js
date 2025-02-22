@@ -1,7 +1,4 @@
-import mongoose from "mongoose";
-
-
-
+import mongoose from "mongoose"; 
 const examSchema = new mongoose.Schema({
     examType: String,
     class: String,

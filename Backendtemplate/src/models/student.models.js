@@ -18,8 +18,7 @@ const studentSchema = new Schema({
     },
     phone_no: {
         type: Number,
-        required: true,
-        unique: true,
+        required: true, 
     },
     address: {
         type: String,

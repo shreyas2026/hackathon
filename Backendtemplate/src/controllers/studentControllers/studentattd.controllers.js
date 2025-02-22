@@ -36,12 +36,14 @@ export const getClassDetailsWithAttendance = async (req, res) => {
         }
 
         // Fetch students by class
-        const studentList = await Student.find({ class: className }).select("-__v -createdAt -updatedAt");
-        
+        const studentList = await Student.find({ class: className })
+            .select("-__v -createdAt -updatedAt");
+
         if (!studentList.length) {
             return res.status(404).json({ message: "No students found for the given class" });
         }
-
+        console.log(studentList);
+        
         const studentIds = studentList.map(student => student._id);
 
         // Fetch attendance records for the given date
@@ -54,7 +56,9 @@ export const getClassDetailsWithAttendance = async (req, res) => {
         const studentDataWithAttendance = studentList.map(student => {
             const attendance = attendanceRecords.find(record => record.studentId.equals(student._id));
             return {
-                ...student.toObject(),
+                name: student.name,
+                roll_no: student.roll_no,
+                phone_no: student.phone_no,  // Include phone number
                 attendanceStatus: attendance ? attendance.status : "Not Recorded"
             };
         });
@@ -68,6 +72,7 @@ export const getClassDetailsWithAttendance = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
+
 
 
 
