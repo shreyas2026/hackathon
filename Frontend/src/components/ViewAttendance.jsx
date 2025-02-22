@@ -6,7 +6,9 @@ import {
   ArrowLeft,
   Search,
   CheckCircle,
-  XCircle
+  XCircle,
+  UserCheck,
+  UsersIcon
 } from "lucide-react";
 
 const ViewAttendance = () => {
@@ -55,6 +57,13 @@ const ViewAttendance = () => {
     
     setIsLoading(false);
   };
+
+  // Calculate attendance statistics
+  const totalStudents = students.length;
+  const presentStudents = students.filter(student => student.attendanceStatus === "true").length;
+  const attendancePercentage = totalStudents > 0 
+    ? Math.round((presentStudents / totalStudents) * 100) 
+    : 0;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -116,41 +125,63 @@ const ViewAttendance = () => {
           </div>
 
           {students.length > 0 && (
-            <div className="space-y-3">
-              {students.map((student) => (
-                <div
-                  key={student._id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300"
-                >
+            <>
+              {/* Attendance Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-70 mb-6">
+                <div className="bg-blue-50 rounded-lg p-4 flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-gray-900">{student.name}</p>
-                    <p className="text-sm text-gray-600">Roll No: {student.roll_no}</p>
+                    <p className="text-sm text-blue-600 font-medium">Total Students</p>
+                    <p className="text-2xl font-bold text-blue-700">{totalStudents}</p>
                   </div>
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
-                    student.attendanceStatus === "true" 
-                      ? "bg-green-100 text-green-700" 
-                      : student.attendanceStatus === "false"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-gray-100 text-gray-700"
-                  }`}>
-                    {student.attendanceStatus === "true" ? (
-                      <CheckCircle className="w-4 h-4" />
-                    ) : student.attendanceStatus === "false" ? (
-                      <XCircle className="w-4 h-4" />
-                    ) : (
-                      "-"
-                    )}
-                    <span className="font-medium">
-                      {student.attendanceStatus === "true" 
-                        ? "Present" 
-                        : student.attendanceStatus === "false"
-                        ? "Absent"
-                        : "Not Recorded"}
-                    </span>
-                  </div>
+                  <UsersIcon className="w-8 h-8 text-blue-500" />
                 </div>
-              ))}
-            </div>
+
+                <div className="bg-green-50 rounded-lg p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-green-600 font-medium">Present Students</p>
+                    <p className="text-2xl font-bold text-green-700">{presentStudents}</p>
+                  </div>
+                  <UserCheck className="w-8 h-8 text-green-500" />
+                </div>
+              </div>
+
+              {/* Student List */}
+              <div className="space-y-3">
+                {students.map((student) => (
+                  <div
+                    key={student._id}
+                    className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900">{student.name}</p>
+                      <p className="text-sm text-gray-600">Roll No: {student.roll_no}</p>
+                    </div>
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
+                      student.attendanceStatus === "true" 
+                        ? "bg-green-100 text-green-700" 
+                        : student.attendanceStatus === "false"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-gray-100 text-gray-700"
+                    }`}>
+                      {student.attendanceStatus === "true" ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : student.attendanceStatus === "false" ? (
+                        <XCircle className="w-4 h-4" />
+                      ) : (
+                        "-"
+                      )}
+                      <span className="font-medium">
+                        {student.attendanceStatus === "true" 
+                          ? "Present" 
+                          : student.attendanceStatus === "false"
+                          ? "Absent"
+                          : "Not Recorded"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
