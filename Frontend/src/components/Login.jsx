@@ -1,14 +1,42 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, UserPlus, Home, AlertCircle, CheckCircle, User } from 'lucide-react';
 
 function Login() {
     const [email, setEmail] = useState("");
-    const [name, setName] = useState(""); // Added name state
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const getUserProfile = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/users/getProfile', {             
+                withCredentials: true,
+                headers: {
+                    "Content-Type": 'application/json'
+                },
+            });
+            
+            console.log(response.data)
+            const userRole = response.data.data.user.role;
+            
+            // Redirect based on role
+            if (userRole === "Headmaster") {
+                navigate("/hm");
+            } else if (userRole === "Teacher") {
+                navigate("/teacher");
+            }
+            // Add other role redirections if needed
+            
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+            setError("Failed to fetch user profile");
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,15 +50,20 @@ function Login() {
                 {
                     withCredentials: true,
                     headers: {
-                        "Content-Type": 'application/json'  // Changed from x-www-form-urlencoded since you're sending JSON
+                        "Content-Type": 'application/json'
                     },
                 }
             );
             
             setSuccess(response.data.message || "Logged in successfully!");
             console.log("User Data:", response.data.data.user);
+            
+            // After successful login, get user profile and redirect
+            await getUserProfile();
+
         } catch (error) {
             console.error("Login error:", error);
+            setError(error.response?.data?.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -39,7 +72,7 @@ function Login() {
     return (
         <div className="min-h-screen py-16 px-6 sm:px-8 lg:px-12 flex items-center justify-center">
             <div className="w-full max-w-lg mx-auto">
-                <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden p-10 space-y-8">
+                <div className="bg-gray-100 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden p-10 space-y-8">
                     <div className="text-center">
                         <div className="mx-auto h-16 w-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
                             <LogIn className="h-8 w-8 text-white" />
@@ -139,14 +172,10 @@ function Login() {
                         <div className="text-center">
                             <span className="text-base text-gray-600">Don't have an account?</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <button className="flex items-center justify-center py-3 px-5 rounded-lg text-base font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all">
+                        <div className='flex justify-center'>
+                            <button onClick={()=>{navigate("/register")}} className="flex items-center justify-center py-4 px-10 rounded-lg text-base font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all">
                                 <UserPlus className="h-5 w-5 mr-2" />
                                 Register
-                            </button>
-                            <button className="flex items-center justify-center py-3 px-5 rounded-lg text-base font-medium text-white bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 transition-all">
-                                <Home className="h-5 w-5 mr-2" />
-                                Dashboard
                             </button>
                         </div>
                     </div>

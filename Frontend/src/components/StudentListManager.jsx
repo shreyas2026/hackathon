@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { X } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { X, Calendar, BookOpen, ChevronDown } from 'lucide-react';
 
 const StudentListManager = () => {
   const [selectedClass, setSelectedClass] = useState('');
@@ -12,46 +12,46 @@ const StudentListManager = () => {
   const [studentMarks, setStudentMarks] = useState([]);
   const [studentAttendance, setStudentAttendance] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedExamType, setSelectedExamType] = useState('All');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
-  // Generate class options
-  const classOptions = Array.from({ length: 20 }, (_, i) => {
-    const grade = Math.floor(i / 2) + 1;
-    const section = i % 2 === 0 ? 'A' : 'B';
-    const value = `${grade}${section}`;
-    return { value, label: `Class ${value}` };
-  });
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const examTypes = ['All', 'Unit Test', 'Mid Term', 'Final Term'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                 'July', 'August', 'September', 'October', 'November', 'December'];
 
-  const fetchStudentsByClass = async (selectedClass) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ class: selectedClass }),
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch students');
-      const data = await response.json();
-      setStudents(data.studentList);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+                 const classOptions = Array.from({ length: 20 }, (_, i) => {
+                  const grade = Math.floor(i / 2) + 1;
+                  const section = i % 2 === 0 ? 'A' : 'B';
+                  const value = `${grade}${section}`;
+                  return { value, label: `Class ${value}` };
+                });
+              
+                const fetchStudentsByClass = async (selectedClass) => {
+                  try {
+                    setLoading(true);
+                    setError(null);
+                    const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ class: selectedClass }),
+                    });
+              
+                    if (!response.ok) throw new Error('Failed to fetch students');
+                    const data = await response.json();
+                    setStudents(data.studentList);
+                  } catch (err) {
+                    setError(err.message);
+                  } finally {
+                    setLoading(false);
+                  }
+                };
   const fetchStudentDetails = async (studentId) => {
     try {
       // Fetch marks
-      const marksResponse = await fetch(`http://localhost:8080/api/v1/students/getExistingMarksByStudentId/${studentId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
-        }
-      });
-      console.log(marksResponse);
+      const marksResponse = await fetch(`http://localhost:8080/api/v1/students/getExistingMarksByStudentId/${studentId}`);
       if (marksResponse.ok) {
         const marksData = await marksResponse.json();
         setStudentMarks(marksData);
@@ -59,7 +59,6 @@ const StudentListManager = () => {
 
       // Fetch attendance
       const attendanceResponse = await fetch(`http://localhost:8080/api/v1/students/getStudentAttendanceByStudentId/${studentId}`);
-      console.log(attendanceResponse);
       if (attendanceResponse.ok) {
         const attendanceData = await attendanceResponse.json();
         setStudentAttendance(attendanceData);
@@ -69,47 +68,56 @@ const StudentListManager = () => {
     }
   };
 
-  const handleStudentSelect = async (student) => {
+  // New data transformation functions
+  const getMonthlyAttendance = (month) => {
+    return studentAttendance.filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate.getMonth() === month;
+    });
+  };
+
+  const getExamTypeMarks = (examType) => {
+    if (examType === 'All') return studentMarks;
+    return studentMarks.filter(mark => mark.examType === examType);
+  };
+
+  const calculateSubjectAverages = (marks) => {
+    const subjectMap = new Map();
+    marks.forEach(mark => {
+      if (!subjectMap.has(mark.subjectName)) {
+        subjectMap.set(mark.subjectName, { total: 0, count: 0 });
+      }
+      const current = subjectMap.get(mark.subjectName);
+      subjectMap.set(mark.subjectName, {
+        total: current.total + mark.marks,
+        count: current.count + 1
+      });
+    });
+
+    return Array.from(subjectMap).map(([subject, data]) => ({
+      subject,
+      average: data.total / data.count
+    }));
+  };
+
+  const calculateAttendanceStats = (attendance) => {
+    const total = attendance.length;
+    const present = attendance.filter(a => a.status === 'true').length;
+    return [
+      { name: 'Present', value: present },
+      { name: 'Absent', value: total - present }
+    ];
+  };
+
+    const handleStudentSelect = async (student) => {
     setSelectedStudent(student);
     await fetchStudentDetails(student._id);
     setShowModal(true);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  // Prepare data for charts
-  const prepareMarksData = () => {
-    if (!studentMarks.length) return [];
-    return studentMarks.map(mark => ({
-      subject: mark.subjectName,
-      marks: mark.marks,
-      examType: mark.examType
-    }));
-  };
-
-  const calculateAttendancePercentage = () => {
-    if (!studentAttendance.length) return 0;
-    // Still using raw attendance data for calculation
-    const present = studentAttendance.filter(a => a.status === 'true').length;
-    return (present / studentAttendance.length) * 100;
-  };
-
-  // Transform attendance data for the chart visualization
-  const transformAttendanceData = (data) => {
-    return data.map(record => ({
-      date: record.date,
-      // Convert 'true'/'false' string to 1/0 for better visualization
-      status: record.status === 'true' ? 1 : 0,
-      // Add a label for tooltip
-      statusLabel: record.status === 'true' ? 'Present' : 'Absent'
-    }));
-  };
-
   return (
-    <div className="w-full max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-10">
-      <div className="mb-6">
+    <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-10">
+            <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Student List Manager</h2>
       </div>
       
@@ -186,12 +194,14 @@ const StudentListManager = () => {
         )}
       </div>
 
-      {/* Student Details Modal */}
+      {/* Enhanced Student Details Modal */}
       {showModal && selectedStudent && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto p-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-800">Student Details</h3>
+              <h3 className="text-2xl font-bold text-gray-800">
+                Student Profile: {selectedStudent.name}
+              </h3>
               <button 
                 onClick={() => setShowModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-full"
@@ -209,59 +219,103 @@ const StudentListManager = () => {
                   <p><span className="font-medium">Roll No:</span> {selectedStudent.roll_no}</p>
                   <p><span className="font-medium">Email:</span> {selectedStudent.email}</p>
                   <p><span className="font-medium">Phone:</span> {selectedStudent.phone_no}</p>
-                  <p><span className="font-medium">DOB:</span> {formatDate(selectedStudent.dob)}</p>
+                  <p><span className="font-medium">DOB:</span> {new Date(selectedStudent.dob).toLocaleDateString()}</p>
                   <p><span className="font-medium">Address:</span> {selectedStudent.address}</p>
                 </div>
               </div>
 
-              {/* Academic Performance */}
+              {/* Monthly Attendance Overview */}
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-semibold mb-4">Academic Performance</h4>
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-semibold">Monthly Attendance</h4>
+                  <select 
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    className="border rounded-md p-1"
+                  >
+                    {months.map((month, index) => (
+                      <option key={month} value={index}>{month}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={prepareMarksData()}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="subject" />
-                      <YAxis />
+                    <PieChart>
+                      <Pie
+                        data={calculateAttendanceStats(getMonthlyAttendance(selectedMonth))}
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {calculateAttendanceStats(getMonthlyAttendance(selectedMonth)).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="marks" fill="#3b82f6" />
-                    </BarChart>
+                    </PieChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              {/* Attendance Chart */}
+              {/* Academic Performance */}
               <div className="bg-gray-50 p-4 rounded-lg md:col-span-2">
-                <h4 className="font-semibold mb-4">Attendance Overview</h4>
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-semibold">Academic Performance</h4>
+                  <select 
+                    value={selectedExamType}
+                    onChange={(e) => setSelectedExamType(e.target.value)}
+                    className="border rounded-md p-1"
+                  >
+                    {examTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={transformAttendanceData(studentAttendance)}>
+                    <BarChart data={getExamTypeMarks(selectedExamType)}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" tickFormatter={formatDate} />
-                      <YAxis domain={[0, 1]} ticks={[0, 1]} /> {/* Only show 0 and 1 */}
-                      <Tooltip 
-                        formatter={(value) => [value === 1 ? 'Present' : 'Absent', 'Status']}
-                        labelFormatter={formatDate}
-                      />
+                      <XAxis dataKey="subjectName" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
                       <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="status"
-                        name="Attendance"
-                        stroke="#3b82f6" 
-                        dot={{ fill: '#3b82f6' }}
-                      />
-                    </LineChart>
+                      <Bar dataKey="marks" fill="#3b82f6" name="Marks" />
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-4 text-center">
-                  <p className="text-lg">
-                    Overall Attendance: 
-                    <span className="font-bold ml-2">
-                      {calculateAttendancePercentage().toFixed(1)}%
-                    </span>
-                  </p>
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-sm text-blue-600 font-medium">Average Score</p>
+                    <p className="text-2xl font-bold text-blue-700">
+                      {(studentMarks.reduce((acc, curr) => acc + curr.marks, 0) / studentMarks.length || 0).toFixed(1)}%
+                    </p>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <p className="text-sm text-green-600 font-medium">Highest Score</p>
+                    <p className="text-2xl font-bold text-green-700">
+                      {Math.max(...studentMarks.map(m => m.marks), 0)}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subject-wise Performance */}
+              <div className="bg-gray-50 p-4 rounded-lg md:col-span-2">
+                <h4 className="font-semibold mb-4">Subject-wise Analysis</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {calculateSubjectAverages(studentMarks).map((subject, index) => (
+                    <div key={index} className="bg-white p-4 rounded-lg shadow">
+                      <h5 className="font-medium text-gray-700 mb-2">{subject.subject}</h5>
+                      <div className="flex items-end gap-2">
+                        <span className="text-2xl font-bold text-indigo-600">
+                          {subject.average.toFixed(1)}%
+                        </span>
+                        <span className="text-sm text-gray-500">average</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
