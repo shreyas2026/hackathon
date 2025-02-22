@@ -30,6 +30,14 @@ function NavBar() {
               </NavLink>
 
               <NavLink 
+                to="/teacher/viewClassAttendance" 
+                className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
+              >
+                <ClipboardList className="w-5 h-5" />
+                <span className="whitespace-nowrap">view Attendance</span>
+              </NavLink>
+
+              <NavLink 
                 to="/teacher/marks" 
                 className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
               >

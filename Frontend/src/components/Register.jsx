@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
 import axios from 'axios';
 
 
@@ -39,7 +39,7 @@ function Register() {
             // Axios automatically parses JSON, so no need for response.json()
             if (response.status === 200 || response.status === 201) {
                 setMessage({ type: "success", text: response.data.message });
-                setTimeout(() => navigate("/login"), 1500);
+                setTimeout(() => navigate("/"), 1500);
             } else {
                 setMessage({ 
                     type: "error", 
@@ -57,7 +57,7 @@ function Register() {
     return (
         <div className="min-h-screen py-16 px-6 flex items-center justify-center">
             <div className="w-full max-w-lg">
-                <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-10 space-y-8">
+                <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-10 space-y-8">
                     <div className="text-center">
                         <div className="mx-auto h-16 w-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
                             <UserPlus className="h-8 w-8 text-white" />
@@ -139,6 +139,17 @@ function Register() {
                             Create Account
                         </button>
                     </form>
+                                        <div className="space-y-6">
+                                            <div className="text-center">
+                                                <span className="text-base text-gray-600">Already have an account?</span>
+                                            </div>
+                                            <div className='flex justify-center'>
+                                                <button onClick={()=>{navigate("/")}} className="flex items-center justify-center py-4 px-10 rounded-lg text-base font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all">
+                                                    <LogIn className="h-5 w-5 mr-2" />
+                                                    Log in
+                                                </button>
+                                            </div>
+                                        </div>
                 </div>
             </div>
         </div>
