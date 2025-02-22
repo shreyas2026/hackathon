@@ -1,4 +1,5 @@
 import {StudentAttendance} from '../../models/Studentattd.models.js';
+import { Student } from '../../models/student.models.js';
 
 export const addStudentAttendance = async (req, res) => {
     try {
@@ -22,6 +23,53 @@ export const addStudentAttendance = async (req, res) => {
         res.status(500).json({ message: "Error saving attendance", error: error.message });
     }
 };
+
+
+export const getClassDetailsWithAttendance = async (req, res) => {
+    try {
+        console.log("Request received:", req.body);
+        
+        const { className, date } = req.body; // Get class name and date
+        
+        if (!className || !date) {
+            return res.status(400).json({ message: "Class name and date are required" });
+        }
+
+        // Fetch students by class
+        const studentList = await Student.find({ class: className }).select("-__v -createdAt -updatedAt");
+        
+        if (!studentList.length) {
+            return res.status(404).json({ message: "No students found for the given class" });
+        }
+
+        const studentIds = studentList.map(student => student._id);
+
+        // Fetch attendance records for the given date
+        const attendanceRecords = await StudentAttendance.find({
+            studentId: { $in: studentIds },
+            date: new Date(date)
+        }).select("studentId status");
+
+        // Map attendance status to students
+        const studentDataWithAttendance = studentList.map(student => {
+            const attendance = attendanceRecords.find(record => record.studentId.equals(student._id));
+            return {
+                ...student.toObject(),
+                attendanceStatus: attendance ? attendance.status : "Not Recorded"
+            };
+        });
+
+        res.status(200).json({
+            message: "Class details with attendance fetched successfully",
+            students: studentDataWithAttendance,
+        });
+    } catch (error) {
+        console.error("Error in getClassDetailsWithAttendance:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+};
+
+
 
 
 export const getMonthlyStudentAttendance = async(req, res) => {

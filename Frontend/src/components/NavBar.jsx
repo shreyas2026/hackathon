@@ -12,7 +12,11 @@ function NavBar() {
           </NavLink>
 
           <NavLink to="/teacher/attendance" className="flex items-center gap-2 text-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-white/50 p-2 rounded-lg">
-            Attendance
+            Add Attendance
+          </NavLink>
+
+          <NavLink to="/teacher/viewClassAttendance" className="flex items-center gap-2 text-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-white/50 p-2 rounded-lg">
+            View attendance
           </NavLink>
 
           <NavLink to="/teacher/marks" className="flex items-center gap-2 text-lg font-medium text-gray-700 hover:text-blue-600 hover:bg-white/50 p-2 rounded-lg">
