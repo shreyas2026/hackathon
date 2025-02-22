@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, Book, User, Trash2, Plus, Award, MapPin, Building, Phone } from "lucide-react";
+import { Calendar, Clock, Book, User, Trash2, Plus, Award, MapPin, Building, Phone,Download } from "lucide-react";
 import axios from "axios";
 
 function ManageExamsAndInstructors() {
@@ -38,10 +38,69 @@ function ManageExamsAndInstructors() {
   const rooms = ["Room 101", "Room 102", "Room 103", "Room 201", "Room 202","Room 203","Room 301","Room 302","Room 303","Room 401","Room 402","Room 403","Room 501","Room 502","Room 503","Hall A","Hall B","Hall C"];
   const specalization=["Primary","Secondary","Higher Secondary"];
   const departments=["Science","English","Maths","Social","Computer","Physical Education"];
-
+  
   useEffect(() => {
     fetchFacultyData();
   }, []);
+  
+  const downloadExamsData = () => {
+    // Create Excel-like CSV content
+    let csvContent = "Exam Type,Subject,Class,Section,Date,Duration\n";
+    
+    exams.forEach(exam => {
+      const row = [
+        exam.examType,
+        exam.subject,
+        exam.class,
+        exam.section,
+        new Date(exam.date).toLocaleDateString(),
+        exam.duration
+      ].map(item => `"${item}"`).join(",");
+      
+      csvContent += row + "\n";
+    });
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `exams_schedule_${new Date().toLocaleDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadInvigilatorsData = () => {
+    // Create Excel-like CSV content
+    let csvContent = "Name,Faculty Specialization,Department,Assigned Room,Exam Date,Time Slot,Contact Number,Backup Invigilator\n";
+    
+    invigilators.forEach(inv => {
+      const row = [
+        inv.name,
+        inv.faculty,
+        inv.department,
+        inv.assignedRoom,
+        inv.examDate,
+        inv.timeSlot,
+        inv.contactNumber,
+        inv.backupInvigilator
+      ].map(item => `"${item}"`).join(",");
+      
+      csvContent += row + "\n";
+    });
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `invigilators_schedule_${new Date().toLocaleDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
 
   const fetchFacultyData = async () => {
     try {
@@ -176,9 +235,20 @@ function ManageExamsAndInstructors() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Exam Management Section */}
           <section className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="flex items-center justify-center mb-8">
-              <Award className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-3xl font-bold text-gray-900">Manage Exams</h2>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center">
+                <Award className="w-8 h-8 text-blue-600 mr-3" />
+                <h2 className="text-3xl font-bold text-gray-900">Manage Exams</h2>
+              </div>
+              {exams.length > 0 && (
+                <button
+                  onClick={downloadExamsData}
+                  className="flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition duration-200"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Schedule
+                </button>
+              )}
             </div>
 
             <motion.form
@@ -341,9 +411,20 @@ function ManageExamsAndInstructors() {
 
           {/* Invigilator Management Section */}
           <section className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="flex items-center justify-center mb-8">
-              <User className="w-8 h-8 text-purple-600 mr-3" />
-              <h2 className="text-3xl font-bold text-gray-900">Manage Invigilators</h2>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center">
+                <User className="w-8 h-8 text-purple-600 mr-3" />
+                <h2 className="text-3xl font-bold text-gray-900">Manage Invigilators</h2>
+              </div>
+              {invigilators.length > 0 && (
+                <button
+                  onClick={downloadInvigilatorsData}
+                  className="flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition duration-200"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Schedule
+                </button>
+              )}
             </div>
 
             <motion.form
@@ -353,7 +434,7 @@ function ManageExamsAndInstructors() {
               animate={{ opacity: 1 }}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Faculty
                   </label>
@@ -374,7 +455,7 @@ function ManageExamsAndInstructors() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Faculty Specialazation
+                    Faculty Specialization
                   </label>
                   <select
                     name="faculty"
