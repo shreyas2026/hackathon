@@ -25,12 +25,13 @@ import studentRouter from "./routes/student.routes.js"
 import teacherRouter from "./routes/teacher.routes.js"
 import timetableRouter from "./routes/timetable.routes.js"
 import SubjectRouter from "./routes/subject.routes.js"
+import ExamRouter from "./routes/exam.routes.js"
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/students", studentRouter);
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/timetable", timetableRouter);
 app.use("/api/v1/subjects", SubjectRouter);
-
+app.use("/api/v1/exams", ExamRouter);
 
 
 

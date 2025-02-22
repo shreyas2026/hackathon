@@ -14,7 +14,7 @@ import TeacherLessonPlan from './components/teacherLessonPlan.jsx';
 import HMDashboard from './components/HMDashboard.jsx';
 import HMProfile from './components/HMProfile.jsx';
 import HMManageTeachers from './components/HMManageTeachers.jsx';
-import HMManageExams from './components/HMManageExams.jsx';
+import ManageExamsAndInvigilators from './components/HMManageExams.jsx';
 import HMManageTimeTable from './components/HMManageTimeTable.jsx';
 
 
@@ -34,7 +34,7 @@ function App() {
         <Route path="/hm" element={<HMDashboard />}>
           <Route index element={<HMProfile />} />
           <Route path="manageTeachers" element={<HMManageTeachers />} /> 
-          <Route path="manageExams" element={<HMManageExams/>}/>
+          <Route path="manageExams" element={<ManageExamsAndInvigilators/>}/>
           <Route path="manageTimeTable" element={<HMManageTimeTable/>}/>
         </Route>
 
