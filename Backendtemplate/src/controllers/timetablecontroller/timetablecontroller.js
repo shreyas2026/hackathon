@@ -1,4 +1,4 @@
-import Timetable from '../../models/timetable.models.js';
+import Timetable from '../../models/Timetable.models.js';
 import { User } from '../../models/user.models.js';
 
 // Fetch timetable
