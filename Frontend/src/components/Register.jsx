@@ -12,10 +12,41 @@ function Register() {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("Teacher");
     const [message, setMessage] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const getUserProfile = async () => {
+        try {
+            const response = await axios.get(`${baseurl}/users/getProfile`, {             
+                withCredentials: true,
+                headers: {
+                    "Content-Type": 'application/json'
+                },
+            });
+            
+            console.log("Profile data:", response.data);
+            const userRole = response.data.data.user.role;
+            
+            // Redirect based on role
+            if (userRole === "Headmaster") {
+                navigate("/hm");
+            } else if (userRole === "Teacher") {
+                navigate("/teacher");
+            }
+            
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+            setMessage({ 
+                type: "error", 
+                text: "Failed to fetch user profile" 
+            });
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMessage(null);
     
         const userData = {
             name: username,
@@ -37,21 +68,21 @@ function Register() {
                 }
             );
     
-            // Axios automatically parses JSON, so no need for response.json()
             if (response.status === 200 || response.status === 201) {
-                setMessage({ type: "success", text: response.data.message });
-                setTimeout(() => navigate("/"), 1500);
-            } else {
-                setMessage({ 
-                    type: "error", 
-                    text: response.data.message || "Failed to register." 
-                });
+                setMessage({ type: "success", text: "Registration successful! Redirecting..." });
+                console.log("Registration successful:", response.data);
+                
+                // Get user profile and handle navigation
+                await getUserProfile();
             }
         } catch (error) {
+            console.error("Registration error:", error);
             setMessage({ 
                 type: "error", 
-                text: error.response?.data?.message || "Network error. Please try again." 
+                text: error.response?.data?.message || "Registration failed. Please try again." 
             });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -73,7 +104,7 @@ function Register() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Username */}
+                        {/* Form fields remain the same */}
                         <div>
                             <label className="block text-base font-medium text-gray-700">Username</label>
                             <input
@@ -85,7 +116,6 @@ function Register() {
                             />
                         </div>
 
-                        {/* Email */}
                         <div>
                             <label className="block text-base font-medium text-gray-700">Email</label>
                             <input
@@ -97,7 +127,6 @@ function Register() {
                             />
                         </div>
 
-                        {/* Phone */}
                         <div>
                             <label className="block text-base font-medium text-gray-700">Phone</label>
                             <input
@@ -109,7 +138,6 @@ function Register() {
                             />
                         </div>
 
-                        {/* Password */}
                         <div>
                             <label className="block text-base font-medium text-gray-700">Password</label>
                             <input
@@ -121,7 +149,6 @@ function Register() {
                             />
                         </div>
 
-                        {/* Role Selection */}
                         <div className="flex items-center space-x-3">
                             <input
                                 type="checkbox"
@@ -132,25 +159,36 @@ function Register() {
                             <label className="text-base font-medium text-gray-700">Register as Headmaster</label>
                         </div>
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
+                            disabled={loading}
                             className="w-full py-3 rounded-lg text-lg font-medium text-white bg-purple-600 hover:bg-purple-700 transition"
                         >
-                            Create Account
+                            {loading ? (
+                                <div className="flex items-center justify-center">
+                                    <svg className="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Creating Account...
+                                </div>
+                            ) : (
+                                "Create Account"
+                            )}
                         </button>
                     </form>
-                                        <div className="space-y-6">
-                                            <div className="text-center">
-                                                <span className="text-base text-gray-600">Already have an account?</span>
-                                            </div>
-                                            <div className='flex justify-center'>
-                                                <button onClick={()=>{navigate("/")}} className="flex items-center justify-center py-4 px-10 rounded-lg text-base font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all">
-                                                    <LogIn className="h-5 w-5 mr-2" />
-                                                    Log in
-                                                </button>
-                                            </div>
-                                        </div>
+
+                    <div className="space-y-6">
+                        <div className="text-center">
+                            <span className="text-base text-gray-600">Already have an account?</span>
+                        </div>
+                        <div className='flex justify-center'>
+                            <button onClick={() => navigate("/")} className="flex items-center justify-center py-4 px-10 rounded-lg text-base font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all">
+                                <LogIn className="h-5 w-5 mr-2" />
+                                Log in
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

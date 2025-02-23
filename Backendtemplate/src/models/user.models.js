@@ -47,18 +47,19 @@ userSchema.methods.isPasswordcorrect=async function(password)
 
 }
 
-userSchema.methods.generateAccessToken=async function(){ 
-    
-      return jwt.sign(
+userSchema.methods.generateAccessToken = async function () { 
+    return jwt.sign(
         {
-            _id:this._id,
-            email:this.email,
-            name:this.name
+            _id: this._id,
+            email: this.email,
+            name: this.name,
+            role: this.role  // Include role in the token payload
         },
         process.env.ACCESS_TOKEN_SECRET,
-       {expiresIn:"1d"}
-      )
-}
+        { expiresIn: "1d" }
+    );
+};
+
 userSchema.methods.generateRefreshToken=async function(){ 
 
     return jwt.sign(

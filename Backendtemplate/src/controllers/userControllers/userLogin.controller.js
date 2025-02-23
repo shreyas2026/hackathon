@@ -59,12 +59,14 @@ const loginUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true
     };
-
+    
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
+        .cookie("role", loggedInUser.role, options)  // Store role in cookies
         .json(new ApiResponse(200, { user: loggedInUser }, "User logged in successfully"));
+    
 });
 
 const logoutUser = asyncHandler(async (req, res) => {

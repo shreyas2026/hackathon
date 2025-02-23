@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, UserCircle, Building } from 'lucide-react';
 
-
 const baseurl = import.meta.env.VITE_BASE_URL;
 
 function TeacherProfile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,10 +16,17 @@ function TeacherProfile() {
         const response = await fetch(`${baseurl}/users/getProfile`, {
           credentials: 'include',
         });
+
+        if (response.status === 401) {
+          setError("You are not authorized. Please log in.");
+          return;
+        }
+
         const data = await response.json();
         setProfile(data.data.user);
       } catch (err) {
         console.error(err);
+        setError("Something went wrong. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -42,49 +49,27 @@ function TeacherProfile() {
     }
   };
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="max-w-3xl mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg">
-        <div className="flex items-center space-x-4 mb-8">
-          <div className="w-16 h-16 bg-gray-200 rounded-full animate-pulse"></div>
-          <div className="flex-1">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-          </div>
-        </div>
-        <div className="space-y-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-12 bg-gray-100 rounded-lg animate-pulse"></div>
-          ))}
-        </div>
+        <p className="text-gray-500">Loading...</p>
       </div>
     );
   }
 
-  const teacherInfo = [
-    { 
-      icon: <Building className="w-5 h-5" />, 
-      label: "School", 
-      value: "Govt. High School Bengaluru",
-      badge: "bg-blue-100 text-blue-800" 
-    },
-    { 
-      icon: <UserCircle className="w-5 h-5" />, 
-      label: "Role", 
-      value: "Teacher",
-      badge: "bg-green-100 text-green-800"
-    },
-    { 
-      icon: <Mail className="w-5 h-5" />, 
-      label: "Email", 
-      value: profile.email 
-    },
-    { 
-      icon: <Phone className="w-5 h-5" />, 
-      label: "Phone", 
-      value: profile.Phone_no 
-    }
-  ];
+  if (error) {
+    return (
+      <div className="max-w-3xl mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg text-center">
+        <p className="text-red-500 font-medium">{error}</p>
+        <button
+          onClick={() => navigate("/login")}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -111,43 +96,26 @@ function TeacherProfile() {
 
           {/* Profile Content */}
           <div className="pt-16 pb-8 px-8">
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {profile.name}
-                </h1>
-                <p className="text-gray-500 mt-1">Teacher ID: {profile.id || 'N/A'}</p>
+            <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
+            <p className="text-gray-500 mt-1">Teacher ID: {profile.id || 'N/A'}</p>
+
+            <div className="grid gap-6 mt-6">
+              <div className="flex items-center p-4 bg-gray-50 rounded-xl">
+                <Mail className="w-5 h-5 text-blue-600" />
+                <p className="ml-4">{profile.email}</p>
+              </div>
+              <div className="flex items-center p-4 bg-gray-50 rounded-xl">
+                <Phone className="w-5 h-5 text-blue-600" />
+                <p className="ml-4">{profile.Phone_no}</p>
               </div>
             </div>
 
-            <div className="grid gap-6">
-              {teacherInfo.map((info, index) => (
-                <div 
-                  key={index}
-                  className="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-[1.02]"
-                >
-                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-white shadow-sm">
-                    <div className="text-blue-600">{info.icon}</div>
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <p className="text-sm font-medium text-gray-500">{info.label}</p>
-                    <p className="text-base font-medium text-gray-900">{info.value}</p>
-                  </div>
-                  {info.badge && (
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${info.badge}`}>
-                      {info.value}
-                    </span>
-                  )}
-                </div>
-              ))}
-
-              {profile.bio && (
-                <div className="p-6 bg-gray-50 rounded-xl mt-4">
-                  <h3 className="font-medium text-gray-900 mb-3">About</h3>
-                  <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
-                </div>
-              )}
-            </div>
+            <button 
+              onClick={handleLogout} 
+              className="mt-6 px-4 py-2 bg-red-600 text-white rounded-lg"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
