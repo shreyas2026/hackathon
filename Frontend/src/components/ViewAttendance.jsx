@@ -6,7 +6,9 @@ import {
   Search,
   CheckCircle,
   XCircle,
-  Send
+  Send,
+  UserCheck,
+  UserX
 } from "lucide-react";
 
 const ViewAttendance = () => {
@@ -91,6 +93,9 @@ const ViewAttendance = () => {
     }
   };
 
+  const totalStudents = students.length;
+  const presentStudents = students.filter(student => student.attendanceStatus === "true").length;
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -151,61 +156,80 @@ const ViewAttendance = () => {
           </div>
 
           {students.length > 0 && (
-            <div className="space-y-3">
-              {students.map((student) => (
-                <div
-                  key={student._id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">{student.name}</p>
-                    <p className="text-sm text-gray-600">Roll No: {student.roll_no}</p>
-                    <p className="text-sm text-gray-600">Phone: {student.phone_no || "N/A"}</p>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-50">
+                <div className="bg-blue-100 p-4 rounded-lg flex items-center justify-between hover:bg-blue-200">
+                  <div className="flex items-center justify-between">
+                    <Users className="w-5 h-5 text-blue-600" />
+                    <span className="text-blue-900">Total Students</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
-                      student.attendanceStatus === "true" 
-                        ? "bg-green-100 text-green-700" 
-                        : student.attendanceStatus === "false"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}>
-                      {student.attendanceStatus === "true" ? (
-                        <CheckCircle className="w-4 h-4" />
-                      ) : student.attendanceStatus === "false" ? (
-                        <XCircle className="w-4 h-4" />
-                      ) : (
-                        "-"
-                      )}
-                      <span className="font-medium">
-                        {student.attendanceStatus === "true" 
-                          ? "Present" 
-                          : student.attendanceStatus === "false"
-                          ? "Absent"
-                          : "Not Recorded"}
-                      </span>
-                    </div>
-                    <button 
-                      onClick={() => sendSMS(student)}
-                      className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2 disabled:bg-gray-300"
-                      disabled={sendingSMS[student._id]}
-                    >
-                      {sendingSMS[student._id] ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" />
-                          Send SMS
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <span className="text-2xl font-bold text-blue-900">{totalStudents}</span>
                 </div>
-              ))}
-            </div>
+                <div className="bg-green-100 p-4 rounded-lg flex items-center justify-between hover:bg-green-200">
+                  <div className="flex items-center gap-2">
+                    <UserCheck className="w-5 h-5 text-green-600" />
+                    <span className="text-green-900">Present Students</span>
+                  </div>
+                  <span className="text-2xl font-bold text-green-900">{presentStudents}</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {students.map((student) => (
+                  <div
+                    key={student._id}
+                    className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900">{student.name}</p>
+                      <p className="text-sm text-gray-600">Roll No: {student.roll_no}</p>
+                      <p className="text-sm text-gray-600">Phone: {student.phone_no || "N/A"}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
+                        student.attendanceStatus === "true" 
+                          ? "bg-green-100 text-green-700" 
+                          : student.attendanceStatus === "false"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}>
+                        {student.attendanceStatus === "true" ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : student.attendanceStatus === "false" ? (
+                          <XCircle className="w-4 h-4" />
+                        ) : (
+                          "-"
+                        )}
+                        <span className="font-medium">
+                          {student.attendanceStatus === "true" 
+                            ? "Present" 
+                            : student.attendanceStatus === "false"
+                            ? "Absent"
+                            : "Not Recorded"}
+                        </span>
+                      </div>
+                      <button 
+                        onClick={() => sendSMS(student)}
+                        className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2 disabled:bg-gray-300"
+                        disabled={sendingSMS[student._id]}
+                      >
+                        {sendingSMS[student._id] ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            Send SMS
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>

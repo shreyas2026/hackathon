@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { X, Calendar, BookOpen, ChevronDown } from 'lucide-react';
+import { X, Calendar, BookOpen, ChevronDown, AlertTriangle, Filter } from 'lucide-react';
 
 const StudentListManager = () => {
   const [selectedClass, setSelectedClass] = useState('');
@@ -14,40 +14,90 @@ const StudentListManager = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedExamType, setSelectedExamType] = useState('All');
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [studentStats, setStudentStats] = useState({});
+  const [selectedFilter, setSelectedFilter] = useState('All');
 
+  const filterOptions = [
+    { value: 'All', label: 'All Students', color: 'bg-gray-50' },
+    { value: 'Critical', label: 'Critical (Marks < 40% & Attendance < 30%)', color: 'bg-red-50' },
+    { value: 'LowMarks', label: 'Low Marks (< 40%)', color: 'bg-orange-50' },
+    { value: 'LowAttendance', label: 'Low Attendance (< 30%)', color: 'bg-purple-50' },
+    { value: 'Good', label: 'Good Standing', color: 'bg-green-50' }
+  ];
+
+  const getStudentCategory = (student) => {
+    if (!student.stats) return 'All';
+    
+    const hasLowMarks = student.stats.averageMarks < 40;
+    const hasLowAttendance = student.stats.attendancePercentage < 30;
+    
+    if (hasLowMarks && hasLowAttendance) return 'Critical';
+    if (hasLowMarks) return 'LowMarks';
+    if (hasLowAttendance) return 'LowAttendance';
+    return 'Good';
+  };
+
+  const filteredStudents = students.filter(student => {
+    if (selectedFilter === 'All') return true;
+    return getStudentCategory(student) === selectedFilter;
+  });
+
+  const getRowColor = (student) => {
+    if (!student.stats) return 'bg-gray-50';
+    
+    const hasLowMarks = student.stats.averageMarks < 40;
+    const hasLowAttendance = student.stats.attendancePercentage < 30;
+    
+    if (hasLowMarks && hasLowAttendance) return 'bg-red-100 hover:bg-red-200';
+    if (hasLowMarks) return 'bg-orange-100 hover:bg-orange-200';
+    if (hasLowAttendance) return 'bg-purple-100 hover:bg-purple-200';
+    return 'bg-green-100 hover:bg-green-200';
+  };
+
+  const getTextColor = (student) => {
+    if (!student.stats) return 'text-gray-800';
+    
+    const hasLowMarks = student.stats.averageMarks < 40;
+    const hasLowAttendance = student.stats.attendancePercentage < 30;
+    
+    if (hasLowMarks && hasLowAttendance) return 'text-red-800';
+    if (hasLowMarks) return 'text-orange-800';
+    if (hasLowAttendance) return 'text-purple-800';
+    return 'text-green-800';
+  };
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
   const examTypes = ['All', 'Unit Test', 'Mid Term', 'Final Term'];
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 
                  'July', 'August', 'September', 'October', 'November', 'December'];
 
-                 const classOptions = Array.from({ length: 20 }, (_, i) => {
-                  const grade = Math.floor(i / 2) + 1;
-                  const section = i % 2 === 0 ? 'A' : 'B';
-                  const value = `${grade}${section}`;
-                  return { value, label: `Class ${value}` };
-                });
+  const classOptions = Array.from({ length: 20 }, (_, i) => {
+    const grade = Math.floor(i / 2) + 1;
+    const section = i % 2 === 0 ? 'A' : 'B';
+    const value = `${grade}${section}`;
+    return { value, label: `Class ${value}` };
+  });
               
-                const fetchStudentsByClass = async (selectedClass) => {
-                  try {
-                    setLoading(true);
-                    setError(null);
-                    const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ class: selectedClass }),
-                    });
+                // const fetchStudentsByClass = async (selectedClass) => {
+                //   try {
+                //     setLoading(true);
+                //     setError(null);
+                //     const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
+                //       method: 'POST',
+                //       headers: {
+                //         'Content-Type': 'application/json',
+                //       },
+                //       body: JSON.stringify({ class: selectedClass }),
+                //     });
               
-                    if (!response.ok) throw new Error('Failed to fetch students');
-                    const data = await response.json();
-                    setStudents(data.studentList);
-                  } catch (err) {
-                    setError(err.message);
-                  } finally {
-                    setLoading(false);
-                  }
-                };
+                //     if (!response.ok) throw new Error('Failed to fetch students');
+                //     const data = await response.json();
+                //     setStudents(data.studentList);
+                //   } catch (err) {
+                //     setError(err.message);
+                //   } finally {
+                //     setLoading(false);
+                //   }
+                // };
   const fetchStudentDetails = async (studentId) => {
     try {
       // Fetch marks
@@ -115,47 +165,178 @@ const StudentListManager = () => {
     setShowModal(true);
   };
 
+  const fetchStudentStats = async (studentId) => {
+    try {
+      // Fetch attendance
+      const attendanceResponse = await fetch(`http://localhost:8080/api/v1/students/getStudentAttendanceByStudentId/${studentId}`);
+      const attendanceData = await attendanceResponse.json();
+      
+      // Fetch marks
+      const marksResponse = await fetch(`http://localhost:8080/api/v1/students/getExistingMarksByStudentId/${studentId}`);
+      const marksData = await marksResponse.json();
+      
+      // Calculate attendance percentage
+      const totalDays = attendanceData.length;
+      const presentDays = attendanceData.filter(record => record.status === 'true').length;
+      const attendancePercentage = totalDays > 0 ? (presentDays / totalDays) * 100 : 0;
+      
+      // Calculate marks percentage
+      const averageMarks = marksData.length > 0 
+        ? marksData.reduce((acc, curr) => acc + curr.marks, 0) / marksData.length 
+        : 0;
+      
+      return {
+        attendancePercentage,
+        averageMarks
+      };
+    } catch (error) {
+      console.error('Error fetching student stats:', error);
+      return { attendancePercentage: 0, averageMarks: 0 };
+    }
+  };
+
+  const fetchStudentsByClass = async (selectedClass) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ class: selectedClass }),
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch students');
+      const data = await response.json();
+      
+      // Fetch stats for each student
+      const studentsWithStats = await Promise.all(
+        data.studentList.map(async (student) => {
+          const stats = await fetchStudentStats(student._id);
+          return { ...student, stats };
+        })
+      );
+      
+      setStudents(studentsWithStats);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  // const getRowColor = (student) => {
+  //   if (!student.stats) return 'bg-gray-50';
+    
+  //   const hasLowMarks = student.stats.averageMarks < 40;
+  //   const hasLowAttendance = student.stats.attendancePercentage < 30;
+    
+  //   if (hasLowMarks && hasLowAttendance) return 'bg-red-50 hover:bg-red-100';
+  //   if (hasLowMarks) return 'bg-orange-50 hover:bg-orange-100';
+  //   if (hasLowAttendance) return 'bg-purple-50 hover:bg-purple-100';
+  //   return 'bg-green-50 hover:bg-green-100';
+  // };
+
+  // const getTextColor = (student) => {
+  //   if (!student.stats) return 'text-gray-800';
+    
+  //   const hasLowMarks = student.stats.averageMarks < 40;
+  //   const hasLowAttendance = student.stats.attendancePercentance < 30;
+    
+  //   if (hasLowMarks && hasLowAttendance) return 'text-red-800';
+  //   if (hasLowMarks) return 'text-orange-800';
+  //   if (hasLowAttendance) return 'text-purple-800';
+  //   return 'text-green-800';
+  // };
+
   return (
     <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-10">
-            <div className="mb-6">
+      {/* Header Section */}
+      <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Student List Manager</h2>
+        <div className="mt-2 flex gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-50 border border-red-200 rounded"></div>
+            <span>Marks &lt; 40% and Attendance &lt; 30%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-orange-50 border border-orange-200 rounded"></div>
+            <span>Marks &lt; 40%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-purple-50 border border-purple-200 rounded"></div>
+            <span>Attendance &lt; 30%</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-50 border border-green-200 rounded"></div>
+            <span>Good Standing</span>
+          </div>
+        </div>
       </div>
       
       <div className="space-y-6">
-        {/* Class Dropdown */}
-        <div className="relative w-64">
-          <button
-            className="w-full px-4 py-2 text-left bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
-            {selectedClass ? `Class ${selectedClass}` : "Select a class"}
-          </button>
-          
-          {isDropdownOpen && (
-            <div className="absolute w-full mt-1 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-auto">
-              {classOptions.map((option) => (
-                <button
-                  key={option.value}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:outline-none"
-                  onClick={() => {
-                    setSelectedClass(option.value);
-                    fetchStudentsByClass(option.value);
-                    setIsDropdownOpen(false);
-                  }}
-                >
+        {/* Filter and Class Selection Row */}
+        <div className="flex gap-4 items-center">
+          {/* Class Dropdown */}
+          <div className="relative w-64">
+            <button
+              className="w-full px-4 py-2 text-left bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {selectedClass ? `Class ${selectedClass}` : "Select a class"}
+              <ChevronDown className="absolute right-2 top-3 h-4 w-4" />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute w-full mt-1 bg-white border rounded-md shadow-lg z-10 max-h-60 overflow-auto">
+                {classOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:outline-none"
+                    onClick={() => {
+                      setSelectedClass(option.value);
+                      fetchStudentsByClass(option.value);
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+  
+          {/* Filter Dropdown */}
+          <div className="relative w-80">
+            <select
+              value={selectedFilter}
+              onChange={(e) => setSelectedFilter(e.target.value)}
+              className="w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            >
+              {filterOptions.map((option) => (
+                <option key={option.value} value={option.value}>
                   {option.label}
-                </button>
+                </option>
               ))}
-            </div>
-          )}
+            </select>
+            <Filter className="absolute right-2 top-3 h-4 w-4 text-gray-400" />
+          </div>
+  
+          {/* Filter Statistics */}
+          <div className="flex gap-4 ml-4 text-sm">
+            <span className="text-gray-600">
+              Showing: {filteredStudents.length} of {students.length} students
+            </span>
+          </div>
         </div>
-
+  
         {/* Loading and Error States */}
         {loading && <div className="text-center py-4 text-gray-600">Loading students...</div>}
         {error && <div className="text-red-500 py-2">{error}</div>}
-
+  
         {/* Students Table */}
-        {!loading && !error && students.length > 0 && (
+        {!loading && !error && filteredStudents.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
@@ -163,15 +344,26 @@ const StudentListManager = () => {
                   <th className="p-3 text-left border border-gray-200 font-semibold text-gray-700">Name</th>
                   <th className="p-3 text-left border border-gray-200 font-semibold text-gray-700">Roll Number</th>
                   <th className="p-3 text-left border border-gray-200 font-semibold text-gray-700">Email</th>
+                  <th className="p-3 text-left border border-gray-200 font-semibold text-gray-700">Stats</th>
                   <th className="p-3 text-left border border-gray-200 font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => (
-                  <tr key={student._id} className="hover:bg-gray-50">
-                    <td className="p-3 border border-gray-200">{student.name}</td>
-                    <td className="p-3 border border-gray-200">{student.roll_no}</td>
-                    <td className="p-3 border border-gray-200">{student.email}</td>
+                {filteredStudents.map((student) => (
+                  <tr key={student._id} className={`${getRowColor(student)} transition-colors`}>
+                    <td className={`p-3 border border-gray-200 ${getTextColor(student)}`}>{student.name}</td>
+                    <td className={`p-3 border border-gray-200 ${getTextColor(student)}`}>{student.roll_no}</td>
+                    <td className={`p-3 border border-gray-200 ${getTextColor(student)}`}>{student.email}</td>
+                    <td className="p-3 border border-gray-200">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm">
+                          Attendance: {student.stats?.attendancePercentage.toFixed(1)}%
+                        </span>
+                        <span className="text-sm">
+                          Avg. Marks: {student.stats?.averageMarks.toFixed(1)}%
+                        </span>
+                      </div>
+                    </td>
                     <td className="p-3 border border-gray-200">
                       <button
                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
@@ -186,15 +378,15 @@ const StudentListManager = () => {
             </table>
           </div>
         )}
-
-        {!loading && !error && students.length === 0 && selectedClass && (
+  
+        {!loading && !error && filteredStudents.length === 0 && selectedClass && (
           <div className="text-center py-4 text-gray-600">
-            No students found in this class.
+            No students found matching the selected criteria.
           </div>
         )}
       </div>
-
-      {/* Enhanced Student Details Modal */}
+  
+      {/* Student Details Modal */}
       {showModal && selectedStudent && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto p-6">
@@ -209,7 +401,7 @@ const StudentListManager = () => {
                 <X size={24} />
               </button>
             </div>
-
+  
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Personal Information */}
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -223,7 +415,7 @@ const StudentListManager = () => {
                   <p><span className="font-medium">Address:</span> {selectedStudent.address}</p>
                 </div>
               </div>
-
+  
               {/* Monthly Attendance Overview */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-4">
@@ -258,7 +450,7 @@ const StudentListManager = () => {
                   </ResponsiveContainer>
                 </div>
               </div>
-
+  
               {/* Academic Performance */}
               <div className="bg-gray-50 p-4 rounded-lg md:col-span-2">
                 <div className="flex justify-between items-center mb-4">
@@ -300,7 +492,7 @@ const StudentListManager = () => {
                   </div>
                 </div>
               </div>
-
+  
               {/* Subject-wise Performance */}
               <div className="bg-gray-50 p-4 rounded-lg md:col-span-2">
                 <h4 className="font-semibold mb-4">Subject-wise Analysis</h4>

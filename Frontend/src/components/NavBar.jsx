@@ -26,7 +26,7 @@ function NavBar() {
                 className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
               >
                 <ClipboardList className="w-5 h-5" />
-                <span className="whitespace-nowrap">Attendance</span>
+                <span className="whitespace-nowrap">Fill Attendance</span>
               </NavLink>
 
               <NavLink 
@@ -34,7 +34,7 @@ function NavBar() {
                 className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
               >
                 <ClipboardList className="w-5 h-5" />
-                <span className="whitespace-nowrap">view Attendance</span>
+                <span className="whitespace-nowrap">View Attendance</span>
               </NavLink>
 
               <NavLink 
