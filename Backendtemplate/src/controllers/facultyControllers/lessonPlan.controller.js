@@ -191,7 +191,8 @@ export const updateLessonPlanStatus = asyncHandler(async (req, res) => {
 
 // Get lesson plan statistics
 export const getLessonPlanStats = asyncHandler(async (req, res) => {
-    const stats = await LessonPlan.aggregate([
+    // Get base stats for different statuses
+    const statusStats = await LessonPlan.aggregate([
         { $match: { teacher: req.user._id } },
         {
             $group: {
@@ -201,6 +202,78 @@ export const getLessonPlanStats = asyncHandler(async (req, res) => {
         }
     ]);
 
+    // Transform status stats into required format
+    const formattedStats = {
+        total: 0,
+        completed: 0,
+        pending: 0,
+        draft: 0,
+        cancelled: 0
+    };
+
+    statusStats.forEach(stat => {
+        formattedStats.total += stat.count;
+        switch(stat._id) {
+            case 'Completed':
+                formattedStats.completed = stat.count;
+                break;
+            case 'Pending':
+                formattedStats.pending = stat.count;
+                break;
+            case 'Draft':
+                formattedStats.draft = stat.count;
+                break;
+            case 'Cancelled':
+                formattedStats.cancelled = stat.count;
+                break;
+        }
+    });
+
+    // Get monthly trends for comparison
+    const previousMonth = new Date();
+    previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+    const monthlyTrends = await LessonPlan.aggregate([
+        {
+            $match: {
+                teacher: req.user._id,
+                createdAt: { $gte: previousMonth }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    status: '$status',
+                    month: { $month: '$createdAt' }
+                },
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    // Calculate trend percentages
+    const currentMonth = new Date().getMonth() + 1;
+    const lastMonth = currentMonth - 1 || 12;
+
+    const calculateTrend = (status) => {
+        const current = monthlyTrends.find(t => t._id.status === status && t._id.month === currentMonth)?.count || 0;
+        const previous = monthlyTrends.find(t => t._id.status === status && t._id.month === lastMonth)?.count || 0;
+        
+        if (previous === 0) return current > 0 ? 100 : 0;
+        return ((current - previous) / previous * 100).toFixed(1);
+    };
+
+    const statsWithTrends = {
+        ...formattedStats,
+        trends: {
+            total: calculateTrend(null),
+            completed: calculateTrend('Completed'),
+            pending: calculateTrend('Pending'),
+            draft: calculateTrend('Draft')
+        }
+    };
+
+    // Get subject distribution
     const subjectStats = await LessonPlan.aggregate([
         { $match: { teacher: req.user._id } },
         {
@@ -212,6 +285,9 @@ export const getLessonPlanStats = asyncHandler(async (req, res) => {
     ]);
 
     return res.status(200).json(
-        new ApiResponse(200, { statusStats: stats, subjectStats }, "Statistics retrieved successfully")
+        new ApiResponse(200, {
+            stats: statsWithTrends,
+            subjectDistribution: subjectStats
+        }, "Statistics retrieved successfully")
     );
 });

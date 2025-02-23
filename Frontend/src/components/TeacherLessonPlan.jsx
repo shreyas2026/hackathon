@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Book, Calendar, Clock, Edit, Trash2, AlertCircle } from "lucide-react";
+import { 
+  Plus, Book, Calendar, Clock, Edit, Trash2, AlertCircle, 
+  CheckCircle2, ClipboardList, GraduationCap, Layers,
+  ChevronDown, ChevronUp, Save, X, FileText
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import CreateLessonPlan from "./CreateLessonPlan";
 import ExpandableLessonPlan from "./ExpandableLessonPlan";
+import StatsDashboard from "./LesssonPlanStatsDashboard";
 
 const TeacherLessonPlan = () => {
   const [lessonPlans, setLessonPlans] = useState([]);
@@ -25,12 +31,35 @@ const TeacherLessonPlan = () => {
     total: 0,
     pages: 0
   });
+  const [stats, setStats] = useState({
+    total: 0,
+    completed: 0,
+    pending: 0,
+    draft: 0
+  });
 
   const axiosInstance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });
+
+  const statusOptions = [
+    { value: 'Draft', color: 'bg-gray-100 text-gray-700' },
+    { value: 'Pending', color: 'bg-yellow-100 text-yellow-700' },
+    { value: 'Approved', color: 'bg-green-100 text-green-700' },
+    { value: 'Completed', color: 'bg-blue-100 text-blue-700' },
+    { value: 'Cancelled', color: 'bg-red-100 text-red-700' }
+  ];
+
+  const fetchStats = async () => {
+    try {
+      const response = await axiosInstance.get('/lessonPlans/stats');
+      setStats(response.data.data);
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
+  };
 
   const fetchLessonPlans = async () => {
     try {
@@ -58,6 +87,7 @@ const TeacherLessonPlan = () => {
 
   useEffect(() => {
     fetchLessonPlans();
+    fetchStats();
   }, [filters, pagination.page]);
 
   const handleDelete = async (id) => {
@@ -65,6 +95,7 @@ const TeacherLessonPlan = () => {
       await axiosInstance.delete(`/lessonPlans/${id}`);
       setLessonPlans(lessonPlans.filter(plan => plan._id !== id));
       setDeleteConfirm(null);
+      fetchStats(); // Refresh stats after deletion
     } catch (err) {
       setError("Failed to delete lesson plan. Please try again.");
     }
@@ -78,56 +109,66 @@ const TeacherLessonPlan = () => {
       setLessonPlans(lessonPlans.map(plan => 
         plan._id === id ? response.data.data : plan
       ));
+      fetchStats(); // Refresh stats after status change
     } catch (err) {
       setError("Failed to update status. Please try again.");
     }
   };
 
-  const handleCreateSuccess = (newLessonPlan) => {
+  const handleCreateSuccess = async (newLessonPlan) => {
     setLessonPlans([newLessonPlan, ...lessonPlans]);
     setShowCreateModal(false);
+    fetchStats(); // Refresh stats after creation
   };
 
-  const handleEditSuccess = (updatedPlan) => {
+  const handleEditSuccess = async (updatedPlan) => {
     setLessonPlans(lessonPlans.map(plan => 
       plan._id === updatedPlan._id ? updatedPlan : plan
     ));
     setShowEditModal(false);
     setSelectedPlan(null);
-  };
-
-  const getStatusColor = (status) => {
-    const colors = {
-      Draft: "bg-gray-200",
-      Pending: "bg-yellow-200",
-      Approved: "bg-green-200",
-      Completed: "bg-blue-200",
-      Cancelled: "bg-red-200",
-    };
-    return colors[status] || "bg-gray-200";
+    fetchStats(); // Refresh stats after edit
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gray-50 p-8"
+    >
+      {/* Header Section */}
+      <motion.div 
+        initial={{ y: -20 }}
+        animate={{ y: 0 }}
+        className="mb-8 flex items-center justify-between"
+      >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Lesson Plans</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage and organize your teaching curriculum</p>
+          <p className="mt-1 text-sm text-gray-500">Design and manage your teaching curriculum</p>
         </div>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
         >
           <Plus size={18} />
           Create New Plan
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      {/* Filters */}
-      <div className="mb-6 rounded-xl bg-white p-6 shadow-sm">
+      {/* Statistics Cards */}
+      <StatsDashboard />
+
+      {/* Filters Section */}
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="mb-6 rounded-xl bg-white p-6 shadow-sm"
+      >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Filter Plans</h2>
           <button 
             className="text-sm text-blue-600 hover:text-blue-700"
             onClick={() => setFilters({
@@ -142,58 +183,52 @@ const TeacherLessonPlan = () => {
           </button>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Subject"
-              className="w-full rounded-lg border border-gray-300 p-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.subject}
-              onChange={(e) => setFilters(prev => ({ ...prev, subject: e.target.value }))}
-            />
-          </div>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Grade"
-              className="w-full rounded-lg border border-gray-300 p-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.grade}
-              onChange={(e) => setFilters(prev => ({ ...prev, grade: e.target.value }))}
-            />
-          </div>
-          <select
-            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          <FilterInput
+            placeholder="Subject"
+            value={filters.subject}
+            onChange={(e) => setFilters(prev => ({ ...prev, subject: e.target.value }))}
+            icon={<Book size={18} />}
+          />
+          <FilterInput
+            placeholder="Grade"
+            value={filters.grade}
+            onChange={(e) => setFilters(prev => ({ ...prev, grade: e.target.value }))}
+            icon={<GraduationCap size={18} />}
+          />
+          <FilterSelect
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-          >
-            <option value="">All Status</option>
-            <option value="Draft">Draft</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-          <input
+            options={statusOptions}
+          />
+          <FilterInput
             type="date"
-            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={filters.startDate}
             onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+            icon={<Calendar size={18} />}
           />
-          <input
+          <FilterInput
             type="date"
-            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={filters.endDate}
             onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+            icon={<Calendar size={18} />}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Error Message */}
-      {error && (
-        <div className="mb-6 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-red-700">
-          <AlertCircle size={20} />
-          <span>{error}</span>
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mb-6 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-red-700"
+          >
+            <AlertCircle size={20} />
+            <span>{error}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Lesson Plans List */}
       {loading ? (
@@ -201,27 +236,46 @@ const TeacherLessonPlan = () => {
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
         </div>
       ) : (
-        <div className="space-y-4">
-          {lessonPlans.map((plan) => (
-            <ExpandableLessonPlan
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="space-y-4"
+        >
+          {lessonPlans.map((plan, index) => (
+            <motion.div
               key={plan._id}
-              plan={plan}
-              onUpdate={(updatedPlan) => {
-                setLessonPlans(lessonPlans.map(p => 
-                  p._id === updatedPlan._id ? updatedPlan : p
-                ));
-              }}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <ExpandableLessonPlan 
+                plan={plan} 
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                onEdit={(plan) => {
+                  setSelectedPlan(plan);
+                  setShowEditModal(true);
+                }}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="mt-6 flex justify-center gap-2">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-6 flex justify-center gap-2"
+        >
           {[...Array(pagination.pages)].map((_, i) => (
-            <button
+            <motion.button
               key={i}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setPagination({ ...pagination, page: i + 1 })}
               className={`h-8 min-w-[2rem] rounded px-3 text-sm transition-colors ${
                 pagination.page === i + 1
@@ -230,9 +284,9 @@ const TeacherLessonPlan = () => {
               }`}
             >
               {i + 1}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {/* Modals */}
@@ -243,7 +297,7 @@ const TeacherLessonPlan = () => {
         />
       )}
 
-      {showEditModal && selectedPlan && (
+      {/* {showEditModal && selectedPlan && (
         <EditLessonPlan
           plan={selectedPlan}
           onClose={() => {
@@ -252,9 +306,60 @@ const TeacherLessonPlan = () => {
           }}
           onSuccess={handleEditSuccess}
         />
-      )}
-    </div>
+      )} */}
+    </motion.div>
   );
-}; 
+};
+
+// Helper Components
+const StatCard = ({ icon, title, value, trend, bgColor }) => (
+  <motion.div
+    whileHover={{ y: -2 }}
+    className={`rounded-xl ${bgColor} p-6`}
+  >
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm font-medium text-gray-600">{title}</p>
+        <h3 className="mt-2 text-3xl font-bold">{value}</h3>
+      </div>
+      <div className="rounded-full bg-white p-3">
+        {icon}
+      </div>
+    </div>
+    <p className="mt-2 text-sm text-gray-600">
+      {trend} from last month
+    </p>
+  </motion.div>
+);
+
+const FilterInput = ({ type = "text", placeholder, value, onChange, icon }) => (
+  <div className="relative">
+    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+      {icon}
+    </div>
+    <input
+      type={type}
+      className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+    />
+  </div>
+);
+
+const FilterSelect = ({ value, onChange, options }) => (
+  <select
+    className="w-full rounded-lg border border-gray-300 p-2.5 text-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+    value={value}
+    onChange={onChange}
+  >
+    <option value="">All Status</option>
+    {options.map(option => (
+      <option key={option.value} value={option.value}>
+        {option.value}
+      </option>
+    ))}
+  </select>
+);
 
 export default TeacherLessonPlan;
