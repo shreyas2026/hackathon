@@ -12,6 +12,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import * as XLSX from 'xlsx';
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 const TeacherAttendance = () => {
   const [selectedClass, setSelectedClass] = useState("");
@@ -38,7 +39,7 @@ const TeacherAttendance = () => {
     setIsLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:8080/api/v1/students/getstudents", {
+      const response = await fetch(`${baseurl}/students/getstudents`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ class: selectedClass })
@@ -123,7 +124,7 @@ const TeacherAttendance = () => {
         }))
       };
 
-      await fetch("http://localhost:8080/api/v1/students/addattendance", {
+      await fetch(`${baseurl}/students/addattendance`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

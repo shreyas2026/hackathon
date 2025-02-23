@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { X, Save, ArrowLeft } from "lucide-react";
 import axios from "axios";
 
+
+const baseurl1 = import.meta.env.VITE_BASE_URL;
+
 const CreateLessonPlan = ({ onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,7 +35,7 @@ const CreateLessonPlan = ({ onClose, onSuccess }) => {
   });
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/api/v1",
+    baseURL: baseurl1,
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });

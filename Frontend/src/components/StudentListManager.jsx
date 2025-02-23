@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { X, Calendar, BookOpen, ChevronDown, AlertTriangle, Filter } from 'lucide-react';
 
+const baseurl = import.meta.env.VITE_BASE_URL; 
 const StudentListManager = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [students, setStudents] = useState([]);
@@ -101,14 +102,14 @@ const StudentListManager = () => {
   const fetchStudentDetails = async (studentId) => {
     try {
       // Fetch marks
-      const marksResponse = await fetch(`http://localhost:8080/api/v1/students/getExistingMarksByStudentId/${studentId}`);
+      const marksResponse = await fetch(`${baseurl}/students/getExistingMarksByStudentId/${studentId}`);
       if (marksResponse.ok) {
         const marksData = await marksResponse.json();
         setStudentMarks(marksData);
       }
 
       // Fetch attendance
-      const attendanceResponse = await fetch(`http://localhost:8080/api/v1/students/getStudentAttendanceByStudentId/${studentId}`);
+      const attendanceResponse = await fetch(`${baseurl}/students/getStudentAttendanceByStudentId/${studentId}`);
       if (attendanceResponse.ok) {
         const attendanceData = await attendanceResponse.json();
         setStudentAttendance(attendanceData);
@@ -168,11 +169,11 @@ const StudentListManager = () => {
   const fetchStudentStats = async (studentId) => {
     try {
       // Fetch attendance
-      const attendanceResponse = await fetch(`http://localhost:8080/api/v1/students/getStudentAttendanceByStudentId/${studentId}`);
+      const attendanceResponse = await fetch(`${baseurl}/students/getStudentAttendanceByStudentId/${studentId}`);
       const attendanceData = await attendanceResponse.json();
       
       // Fetch marks
-      const marksResponse = await fetch(`http://localhost:8080/api/v1/students/getExistingMarksByStudentId/${studentId}`);
+      const marksResponse = await fetch(`${baseurl}/students/getExistingMarksByStudentId/${studentId}`);
       const marksData = await marksResponse.json();
       
       // Calculate attendance percentage
@@ -199,7 +200,7 @@ const StudentListManager = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
+      const response = await fetch(`${baseurl}/students/getStudentListByClass`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

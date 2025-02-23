@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+
+const baseurl = import.meta.env.VITE_BASE_URL; 
 export default function FacultyManagement() {
   const [facultyList, setFacultyList] = useState([]);
   const [attendanceStats, setAttendanceStats] = useState({});
@@ -13,7 +15,7 @@ export default function FacultyManagement() {
 
   const fetchFacultyData = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8080/api/v1/teachers/getfaculty");
+      const { data } = await axios.get(`${baseurl}/teachers/getfaculty`);
       setFacultyList(data?.faculty || []);
     } catch (error) {
       console.error("Error fetching faculty data:", error);
@@ -23,7 +25,7 @@ export default function FacultyManagement() {
 
   const fetchAttendanceStats = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8080/api/v1/teachers/getAllFacultyAttendance");
+      const { data } = await axios.get(`${baseurl}/teachers/getAllFacultyAttendance`);
       const statsMap = {};
       data.stats.forEach(stat => {
         statsMap[stat.facultyId] = stat;
@@ -39,7 +41,7 @@ export default function FacultyManagement() {
     setLoadingStates(prev => ({ ...prev, [facultyId]: true }));
     try {
       const date = new Date().toISOString().split("T")[0];
-      await axios.post("http://localhost:8080/api/v1/teachers/addAttendance", { facultyId, date, status });
+      await axios.post(`${baseurl}/teachers/addAttendance`, { facultyId, date, status });
       await fetchAttendanceStats();
     } catch (error) {
       console.error("Error marking attendance:", error);

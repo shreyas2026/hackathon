@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import "./TimeTable.css";
+
+const baseurl = import.meta.env.VITE_BASE_URL;
+
 const HMManageTimeTable = () => {
   const [groupedTimetable, setGroupedTimetable] = useState({});
   const [loading, setLoading] = useState(true);
@@ -15,7 +18,7 @@ const HMManageTimeTable = () => {
   useEffect(() => {
     const fetchTimetable = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/v1/timetable/getTimetable");
+        const res = await fetch(`${baseurl}/timetable/getTimetable`);
         const data = await res.json();
 
         if (!Array.isArray(data)) {
@@ -74,7 +77,7 @@ const HMManageTimeTable = () => {
 
   const fetchFacultyData = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/teachers/getfaculty");
+      const response = await axios.get(`${baseurl}/teachers/getfaculty`);
       // Store complete faculty data
       setavailableSubstitutes(response.data.faculty);
       // Get unique faculty names
