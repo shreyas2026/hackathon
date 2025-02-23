@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Megaphone, AlertCircle, ChevronRight } from "lucide-react";
+import { Megaphone, AlertCircle, ChevronRight, Calendar } from "lucide-react";
+import { format, parseISO } from "date-fns";
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -10,14 +10,15 @@ const Announcements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/announcements");
-        if (response.data.success && Array.isArray(response.data.data)) {
-          setAnnouncements(response.data.data);
+        const response = await fetch("http://localhost:8080/api/v1/announcements");
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setAnnouncements(data.data.reverse());
         } else {
           setError("Invalid response format from server.");
         }
       } catch (err) {
-        setError(err.response?.data?.error || "Failed to fetch announcements.");
+        setError(err.message || "Failed to fetch announcements.");
       } finally {
         setLoading(false);
       }
@@ -25,14 +26,23 @@ const Announcements = () => {
     fetchAnnouncements();
   }, []);
 
+  const formatDate = (dateString) => {
+    try {
+      const date = parseISO(dateString);
+      return format(date, "MMM d, yyyy 'at' h:mm a");
+    } catch {
+      return dateString;
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center min-h-[400px] p-6">
         <div className="space-y-6 w-full max-w-4xl">
           {[1, 2, 3].map((i) => (
             <div key={i} className="relative overflow-hidden rounded-xl bg-gradient-to-r from-gray-800/50 to-gray-900/50 p-1">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 animate-pulse" />
-              <div className="h-32 rounded-lg bg-gray-800/50" />
+              <div className="h-40 rounded-lg bg-gray-800/50" />
             </div>
           ))}
         </div>
@@ -42,9 +52,9 @@ const Announcements = () => {
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto p-4">
-        <div className="bg-red-500/10 backdrop-blur-lg border border-red-500/20 text-red-400 px-6 py-4 rounded-xl flex items-center gap-3">
-          <AlertCircle className="h-5 w-5" />
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-red-500/10 backdrop-blur-lg border border-red-500/20 text-red-400 px-6 py-4 rounded-xl flex items-center gap-3 shadow-lg">
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <p className="font-medium">{error}</p>
         </div>
       </div>
@@ -54,25 +64,30 @@ const Announcements = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur opacity-20 animate-pulse" />
-        <div className="relative flex items-center gap-4 px-6 py-4 bg-gray-900/60 backdrop-blur-xl rounded-lg border border-gray-700/50">
-          <Megaphone className="h-8 w-8 text-blue-400 animate-bounce" />
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Announcements
-          </h2>
+        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur opacity-25 animate-pulse" />
+        <div className="relative flex items-center gap-4 px-8 py-6 bg-gray-900/70 backdrop-blur-xl rounded-lg border border-gray-700/50 shadow-xl">
+          <div className="p-3 bg-blue-500/10 rounded-full">
+            <Megaphone className="h-8 w-8 text-blue-400" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Announcements
+            </h2>
+            <p className="text-gray-400 mt-1">Stay updated with the latest news and updates</p>
+          </div>
         </div>
       </div>
 
       {announcements.length === 0 ? (
         <div className="relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur opacity-10 group-hover:opacity-20 transition duration-300" />
-          <div className="relative bg-gray-900/60 backdrop-blur-xl rounded-lg p-8 text-center border border-gray-700/50">
-            <p className="text-gray-400">No announcements available.</p>
+          <div className="relative bg-gray-900/70 backdrop-blur-xl rounded-lg p-8 text-center border border-gray-700/50 shadow-lg">
+            <p className="text-gray-400">No announcements available at the moment.</p>
           </div>
         </div>
       ) : (
         <div className="space-y-6">
-          {announcements.map(({ _id, title, description, type }, index) => (
+          {announcements.map(({ _id, title, description, date }, index) => (
             <div
               key={_id}
               className="relative group"
@@ -82,7 +97,7 @@ const Announcements = () => {
               }}
             >
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur opacity-10 group-hover:opacity-25 transition duration-300" />
-              <div className="relative bg-gray-900/60 backdrop-blur-xl rounded-lg p-6 border border-gray-700/50 transform transition-all duration-300 hover:scale-[1.02] group-hover:border-blue-500/30">
+              <div className="relative bg-gray-900/70 backdrop-blur-xl rounded-lg p-6 border border-gray-700/50 transform transition-all duration-300 hover:scale-[1.02] group-hover:border-blue-500/30 shadow-lg">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-xl font-semibold text-blue-400 group-hover:text-blue-300 transition-colors duration-300">
                     {title}
@@ -91,8 +106,9 @@ const Announcements = () => {
                 </div>
                 <p className="text-gray-300 mb-4 leading-relaxed">{description}</p>
                 <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-blue-400" />
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 group-hover:bg-blue-500/20 group-hover:border-blue-500/30 transition-all duration-300">
-                    {type}
+                    {formatDate(date)}
                   </span>
                 </div>
               </div>
