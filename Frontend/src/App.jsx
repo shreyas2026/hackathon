@@ -17,7 +17,7 @@ import ManageExamsAndInvigilators from './components/HMManageExams.jsx';
 import HMManageTimeTable from './components/HMManageTimeTable.jsx';
 import StudentListManager from './components/StudentListManager.jsx';
 import TeacherLessonPlan from './components/TeacherLessonPlan.jsx';
-import TeacherUpcomingExams from './components/teacherUpcomingExams.jsx';
+import TeacherUpcomingExams from './components/TeacherUpcomingExams.jsx'
 import ViewAttendance from './components/ViewAttendance.jsx'
 import AttendanceReport from './components/AttendanceReport.jsx';
 import Announcements from './components/TeacherAnnouncement.jsx';
