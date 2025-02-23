@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, Book, User, Trash2, Plus, Award, MapPin, Building, Phone,Download } from "lucide-react";
+import { Calendar, Clock, Book, User, Trash2, Plus, Award, MapPin, Building, Phone,Download,Speaker } from "lucide-react";
 import axios from "axios";
 
 function ManageExamsAndInstructors() {
@@ -38,7 +38,46 @@ function ManageExamsAndInstructors() {
   const rooms = ["Room 101", "Room 102", "Room 103", "Room 201", "Room 202","Room 203","Room 301","Room 302","Room 303","Room 401","Room 402","Room 403","Room 501","Room 502","Room 503","Hall A","Hall B","Hall C"];
   const specalization=["Primary","Secondary","Higher Secondary"];
   const departments=["Science","English","Maths","Social","Computer","Physical Education"];
-  
+  const [announcements, setAnnouncements] = useState([]);
+  const handleAnnouncement = async () => {
+    if (exams.length === 0 && invigilators.length === 0) {
+        setMessage("No exams or invigilators assigned to announce!");
+        setTimeout(() => setMessage(""), 3000);
+        return;
+    }
+
+    const newAnnouncements = [];
+
+    exams.forEach((exam) => {
+        newAnnouncements.push({
+            title: `Exam Scheduled: ${exam.examType}`,
+            description: `Subject: ${exam.subject}, Class: ${exam.class}${exam.section}, Date: ${new Date(exam.date).toLocaleDateString()}, Duration: ${exam.duration} hours.`,
+            date: new Date(),
+        });
+    });
+
+    invigilators.forEach((inv) => {
+        newAnnouncements.push({
+            title: `Invigilator Assigned: ${inv.name}`,
+            description: `Assigned to ${inv.assignedRoom} on ${inv.examDate}, Time: ${inv.timeSlot}. Contact: ${inv.contactNumber}. Backup: ${inv.backupInvigilator || "None"}`,
+            date: new Date(),
+        });
+    });
+
+    // Update local state
+    setAnnouncements([...announcements, ...newAnnouncements]);
+
+    try {
+       console.log(newAnnouncements);
+        await axios.post("http://localhost:8080/api/v1/announcements", newAnnouncements);
+        setMessage("Announcements added successfully!");
+        setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+        console.error("Error adding announcements:", error);
+        setMessage("Failed to add announcements.");
+        setTimeout(() => setMessage(""), 3000);
+    }
+};
   useEffect(() => {
     fetchFacultyData();
   }, []);
@@ -241,14 +280,25 @@ function ManageExamsAndInstructors() {
                 <h2 className="text-3xl font-bold text-gray-900">Manage Exams</h2>
               </div>
               {exams.length > 0 && (
+                <div>
                 <button
                   onClick={downloadExamsData}
-                  className="flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition duration-200"
+                  className="flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition duration-200 mb-5"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download Schedule
                 </button>
-              )}
+                <button
+                onClick={handleAnnouncement}
+                className="flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition duration-200"
+              >
+                <Speaker className="w-4 h-4 mr-2" />
+                Create the Announcement
+                </button>
+                </div>
+                
+              )
+              }
             </div>
 
             <motion.form
@@ -417,13 +467,22 @@ function ManageExamsAndInstructors() {
                 <h2 className="text-3xl font-bold text-gray-900">Manage Invigilators</h2>
               </div>
               {invigilators.length > 0 && (
+                <div>
                 <button
                   onClick={downloadInvigilatorsData}
-                  className="flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition duration-200"
+                  className="flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition duration-200 mb-5"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download Schedule
                 </button>
+                <button
+                onClick={handleAnnouncement}
+                className="flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition duration-200"
+              >
+                <Speaker className="w-4 h-4 mr-2" />
+                Create the Announcement
+                </button>
+                </div>
               )}
             </div>
 

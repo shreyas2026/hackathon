@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from "react-router-dom";
-import { UserCircle, ClipboardList, BookOpen, LineChart, GraduationCap, Calendar } from 'lucide-react';
+import { UserCircle, ClipboardList, BookOpen, LineChart, GraduationCap, Calendar, Speaker } from 'lucide-react';
 
 function NavBar() {
   const activeClassName = "flex items-center gap-3 text-lg font-medium text-blue-400 bg-gray-800 p-3 rounded-lg transition-all duration-200";
@@ -59,6 +59,13 @@ function NavBar() {
               >
                 <GraduationCap className="w-5 h-5" />
                 <span className="whitespace-nowrap">Student</span>
+              </NavLink>
+              <NavLink 
+                to="/teacher/Announcements" 
+                className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
+              >
+                <Speaker className="w-5 h-5" />
+                <span className="whitespace-nowrap">Announcements</span>
               </NavLink>
 
               {/* <NavLink 
