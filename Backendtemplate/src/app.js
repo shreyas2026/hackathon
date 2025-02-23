@@ -43,6 +43,12 @@ import smsRouter from "./routes/sms.routers.js"
 import verifyLoginRouter from "./routes/verifyLogin.routes.js"
 
 import Announcerouter from "./routes/announce.routes.js"
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        message: "Working fine"
+    })
+})
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/students", studentRouter);
 app.use("/api/v1/teachers", teacherRouter);
