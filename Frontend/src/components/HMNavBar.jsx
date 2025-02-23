@@ -53,6 +53,9 @@ function HMNavBar() {
                 <span>Todays Attendance</span>
               </NavLink>
             </div>
+            <div className="ml-auto flex items-center">
+            <span className="text-2xl font-bold text-blue-400">Headmaster</span>
+          </div>
           </div>
         </div>
       </div>

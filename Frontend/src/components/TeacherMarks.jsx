@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
+const baseurl1 = import.meta.env.VITE_BASE_URL;
+
 const TeacherMarks = () => {
   // Core state
   const [selectedClass, setSelectedClass] = useState(null);
@@ -31,7 +33,7 @@ const TeacherMarks = () => {
 
   // Create axios instance
   const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/api/v1',
+    baseURL: baseurl1,
     withCredentials: true,
     headers: { 'Content-Type': 'application/json' }
   });

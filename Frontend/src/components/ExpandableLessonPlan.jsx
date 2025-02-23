@@ -16,6 +16,7 @@ import {
   Plus
 } from 'lucide-react';
 import axios from 'axios';
+const baseurl1 = import.meta.env.VITE_BASE_URL;
 
 const ExpandableLessonPlan = ({ plan, onStatusChange, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -27,7 +28,7 @@ const ExpandableLessonPlan = ({ plan, onStatusChange, onEdit, onDelete }) => {
   const [error, setError] = useState(null);
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/api/v1",
+    baseURL: baseurl1,
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });

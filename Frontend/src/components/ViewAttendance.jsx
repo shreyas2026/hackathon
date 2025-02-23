@@ -11,6 +11,9 @@ import {
   UserX
 } from "lucide-react";
 
+const baseurl = import.meta.env.VITE_BASE_URL;
+
+
 const ViewAttendance = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -35,7 +38,7 @@ const ViewAttendance = () => {
     setError("");
     
     try {
-      const response = await fetch("http://localhost:8080/api/v1/students/getAttendanceByClass", {
+      const response = await fetch(`${baseurl}/students/getAttendanceByClass`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -68,7 +71,7 @@ const ViewAttendance = () => {
     setSendingSMS((prev) => ({ ...prev, [student._id]: true }));
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/sms/send-sms", {
+      const response = await fetch(`${baseurl}/sms/send-sms`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

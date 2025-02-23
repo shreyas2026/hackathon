@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, UserPlus, Home, AlertCircle, CheckCircle, User } from 'lucide-react';
 
+const baseurl = import.meta.env.VITE_BASE_URL;
+
 function Login() {
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
@@ -14,7 +16,7 @@ function Login() {
 
     const getUserProfile = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/users/getProfile', {             
+            const response = await axios.get(`${baseurl}/users/getProfile`, {             
                 withCredentials: true,
                 headers: {
                     "Content-Type": 'application/json'
@@ -45,7 +47,7 @@ function Login() {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/login', 
+            const response = await axios.post(`${baseurl}/users/login`, 
                 { email, name, password }, 
                 {
                     withCredentials: true,

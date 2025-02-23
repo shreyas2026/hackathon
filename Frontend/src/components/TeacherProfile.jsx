@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, UserCircle, Building } from 'lucide-react';
 
+
+const baseurl = import.meta.env.VITE_BASE_URL;
+
 function TeacherProfile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -10,7 +13,7 @@ function TeacherProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/users/getProfile", {
+        const response = await fetch(`${baseurl}/users/getProfile`, {
           credentials: 'include',
         });
         const data = await response.json();
@@ -27,7 +30,7 @@ function TeacherProfile() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/users/logout", {
+      const response = await fetch(`${baseurl}/users/logout`, {
         method: 'POST',
         credentials: 'include',
       });

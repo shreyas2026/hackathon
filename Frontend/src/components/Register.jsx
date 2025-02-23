@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogIn, UserPlus } from 'lucide-react';
 import axios from 'axios';
 
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 function Register() {
     const [username, setUsername] = useState("");
@@ -26,7 +27,7 @@ function Register() {
     
         try {
             const response = await axios.post(
-                "http://localhost:8080/api/v1/users/register", 
+                `${baseurl}/users/register`, 
                 userData,
                 { 
                     withCredentials: true,

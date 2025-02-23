@@ -8,6 +8,8 @@ import {
   TrendingDown 
 } from "lucide-react";
 import { motion } from "framer-motion";
+const baseurl = import.meta.env.VITE_BASE_URL;
+
 
 const StatCard = ({ icon: Icon, title, value, trend, bgColor }) => (
   <motion.div 
@@ -56,7 +58,7 @@ const StatsDashboard = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/v1/lessonPlans/stats', {
+      const response = await fetch(`${baseurl}/lessonPlans/stats`, {
         credentials: 'include'
       });
       const data = await response.json();

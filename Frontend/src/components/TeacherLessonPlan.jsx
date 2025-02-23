@@ -10,6 +10,8 @@ import CreateLessonPlan from "./CreateLessonPlan";
 import ExpandableLessonPlan from "./ExpandableLessonPlan";
 import StatsDashboard from "./LesssonPlanStatsDashboard";
 
+const baseurl1 = import.meta.env.VITE_BASE_URL;
+
 const TeacherLessonPlan = () => {
   const [lessonPlans, setLessonPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ const TeacherLessonPlan = () => {
   });
 
   const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080/api/v1",
+    baseURL: baseurl1,
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });

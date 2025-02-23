@@ -21,6 +21,7 @@ const Toast = ({ message, type, onClose }) => (
     </button>
   </div>
 );
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 const AttendanceReport = () => {
   const [data, setData] = useState(null);
@@ -39,7 +40,7 @@ const AttendanceReport = () => {
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/v1/students/getTodaysAttendanceReport');
+      const response = await axios.get(`${baseurl}/students/getTodaysAttendanceReport`);
       setData(response.data);
       showToast('Data refreshed successfully', 'success');
     } catch (err) {

@@ -1,17 +1,29 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from 'cookie-parser';
+import dotenv from "dotenv"
+
+dotenv.config({
+    path: "../.env"
+});
 
 const app = express()
 
 
+const CLIENT_URL = process.env.CLIENT_URL;
+console.log(CLIENT_URL);
+const normalizedClientUrl = CLIENT_URL.replace(/\/$/, '');
+
+console.log(CLIENT_URL);
 app.use(cors({
-    origin: 'http://localhost:5173',  // Explicitly set the origin instead of using env variable for testing
+    origin: [
+        normalizedClientUrl,
+        `${normalizedClientUrl}/`
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-})); 
-
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-Requested-With', 'Accept', 'Accept-Version', 'Content-Length', 'Content-MD5', 'Date', 'X-Api-Version']
+}));
 //common middlewares
 app.use(express.json({ limit: "1000kb" }))
 app.use(express.urlencoded({ extended: true, limit: "1000kb" }))
