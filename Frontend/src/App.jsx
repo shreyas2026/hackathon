@@ -20,6 +20,7 @@ import TeacherLessonPlan from './components/TeacherLessonPlan.jsx';
 import TeacherUpcomingExams from './components/teacherUpcomingExams.jsx';
 import ViewAttendance from './components/ViewAttendance.jsx'
 import AttendanceReport from './components/AttendanceReport.jsx';
+import Announcements from './components/TeacherAnnouncement.jsx';
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
           <Route path="lessonPlan" element={<TeacherLessonPlan/>}/>
           <Route path='studentPerformance' element={<StudentListManager/>}/>
           <Route path='upcomingExams' element={<TeacherUpcomingExams/>}/>
+          <Route path='Announcements' element={<Announcements/>}/>
         </Route>
         <Route path="/hm" element={<HMDashboard />}>
           <Route index element={<HMProfile />} />

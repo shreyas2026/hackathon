@@ -71,7 +71,7 @@ const AttendanceReport = () => {
   if (!data) return null;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 min-h-screen">
       {toast && (
         <Toast 
           message={toast.message} 
@@ -88,7 +88,7 @@ const AttendanceReport = () => {
         <motion.div className="flex items-center justify-between mb-8">
           <motion.h1 
             {...fadeIn} 
-            className="text-3xl font-bold text-gray-800"
+            className="text-3xl font-bold text-white"
           >
             Today's Attendance Dashboard
           </motion.h1>

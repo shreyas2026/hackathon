@@ -47,7 +47,7 @@ const PrimarySchoolProfile = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6 bg-gray-50">
+    <div className="max-w-6xl mx-auto p-6 space-y-6 bg-gray-50 mt-8">
       {/* Header with Emblem */}
       <div className="flex items-center justify-center space-x-8 bg-white p-6 rounded-lg shadow-md">
         <IndianEmblem />

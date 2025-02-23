@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { X, Calendar, BookOpen, ChevronDown, AlertTriangle, Filter } from 'lucide-react';
+import { X, Calendar, BookOpen, ChevronDown, AlertTriangle, Filter,Send } from 'lucide-react';
 
 const baseurl = import.meta.env.VITE_BASE_URL; 
 const StudentListManager = () => {
@@ -258,19 +258,19 @@ const StudentListManager = () => {
         <h2 className="text-2xl font-bold text-gray-800">Student List Manager</h2>
         <div className="mt-2 flex gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-50 border border-red-200 rounded"></div>
+            <div className="w-4 h-4 bg-red-100 border border-red-200 rounded"></div>
             <span>Marks &lt; 40% and Attendance &lt; 30%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-orange-50 border border-orange-200 rounded"></div>
+            <div className="w-4 h-4 bg-orange-100 border border-orange-200 rounded"></div>
             <span>Marks &lt; 40%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-purple-50 border border-purple-200 rounded"></div>
+            <div className="w-4 h-4 bg-purple-100 border border-purple-200 rounded"></div>
             <span>Attendance &lt; 30%</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-50 border border-green-200 rounded"></div>
+            <div className="w-4 h-4 bg-green-100 border border-green-200 rounded"></div>
             <span>Good Standing</span>
           </div>
         </div>
@@ -372,6 +372,17 @@ const StudentListManager = () => {
                       >
                         View Details
                       </button>
+                      
+                    </td>
+
+                    <td className="p-3 border border-gray-200">
+                    <button 
+                        className="px-2 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2 disabled:bg-gray-300"
+                      >
+                            <Send className="w-4 h-4" />
+                            Send SMS
+                      </button>
+                      
                     </td>
                   </tr>
                 ))}

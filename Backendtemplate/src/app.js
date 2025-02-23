@@ -11,6 +11,7 @@ const app = express()
 
 
 const CLIENT_URL = process.env.CLIENT_URL;
+console.log(CLIENT_URL);
 const normalizedClientUrl = CLIENT_URL.replace(/\/$/, '');
 
 console.log(CLIENT_URL);
@@ -41,6 +42,7 @@ import LessonPlanRouter from "./routes/lessonPlan.routes.js"
 import smsRouter from "./routes/sms.routers.js"
 import verifyLoginRouter from "./routes/verifyLogin.routes.js"
 
+import Announcerouter from "./routes/announce.routes.js"
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/students", studentRouter);
 app.use("/api/v1/teachers", teacherRouter);
@@ -51,5 +53,7 @@ app.use("/api/v1/lessonPlans", LessonPlanRouter);
 app.use("/api/v1/sms", smsRouter); 
 app.use("/api/v1/verify", verifyLoginRouter); 
 
+app.use("/api/v1/sms", smsRouter);
+app.use("/api/v1/announcements", Announcerouter);
 
 export { app }
