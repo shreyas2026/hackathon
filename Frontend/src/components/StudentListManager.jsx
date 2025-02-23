@@ -71,34 +71,14 @@ const StudentListManager = () => {
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 
                  'July', 'August', 'September', 'October', 'November', 'December'];
 
-  const classOptions = Array.from({ length: 20 }, (_, i) => {
-    const grade = Math.floor(i / 2) + 1;
-    const section = i % 2 === 0 ? 'A' : 'B';
-    const value = `${grade}${section}`;
-    return { value, label: `Class ${value}` };
-  });
+                 const classOptions = Array.from({ length: 6 }, (_, i) => {
+                  const grade = Math.floor((5 - i) / 2) + 8; // Reverse order of grades
+                  const section = (5 - i) % 2 === 0 ? 'A' : 'B'; // Reverse order of sections
+                  const value = `${grade}${section}`;
+                  return { value, label: `Class ${value}` };
+                });
               
-                // const fetchStudentsByClass = async (selectedClass) => {
-                //   try {
-                //     setLoading(true);
-                //     setError(null);
-                //     const response = await fetch('http://localhost:8080/api/v1/students/getStudentListByClass', {
-                //       method: 'POST',
-                //       headers: {
-                //         'Content-Type': 'application/json',
-                //       },
-                //       body: JSON.stringify({ class: selectedClass }),
-                //     });
-              
-                //     if (!response.ok) throw new Error('Failed to fetch students');
-                //     const data = await response.json();
-                //     setStudents(data.studentList);
-                //   } catch (err) {
-                //     setError(err.message);
-                //   } finally {
-                //     setLoading(false);
-                //   }
-                // };
+                
   const fetchStudentDetails = async (studentId) => {
     try {
       // Fetch marks

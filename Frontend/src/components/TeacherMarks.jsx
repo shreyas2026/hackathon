@@ -40,11 +40,14 @@ const TeacherMarks = () => {
 
   // Generate class options
   const classOptions = Array.from({ length: 6 }, (_, i) => {
-    const grade = Math.floor(i / 2) + 8; // Start from grade 8
-    const section = i % 2 === 0 ? 'A' : 'B';
+    const grade = Math.floor((5 - i) / 2) + 8; // Reverse order of grades
+    const section = (5 - i) % 2 === 0 ? 'A' : 'B'; // Reverse order of sections
     const value = `${grade}${section}`;
     return { value, label: `Class ${value}` };
-  }); 
+  });
+  
+  console.log(classOptions);
+  
   
 
   // Initialize marks data structure when students change

@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { Megaphone, AlertCircle, ChevronRight, Calendar } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
+
+
+const baseurl = import.meta.env.VITE_BASE_URL;
+
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +14,7 @@ const Announcements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/announcements");
+        const response = await fetch(`${baseurl}/announcements`);
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {
           setAnnouncements(data.data.reverse());

@@ -24,7 +24,7 @@ const HMNavBar = () => {
   const navItems = [
     { path: '/hm', icon: UserCircle, label: 'Profile' },
     { path: '/hm/manageTeachers', icon: ClipboardList, label: 'Teachers' },
-    { path: '/hm/manageExams', icon: FileText, label: 'Exams' },
+    { path: '/hm/manageExams', icon: FileText, label: 'Manage Exams' },
     { path: '/hm/manageTimeTable', icon: Calendar, label: 'Manage Timetable' },
     { path: '/hm/todaysAttendace', icon: Calendar, label: 'School Attendance' }
   ];

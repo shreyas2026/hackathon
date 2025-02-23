@@ -24,12 +24,12 @@ const NavBar = () => {
 
   const navItems = [
     { path: '/teacher', icon: UserCircle, label: 'Profile' },
-    { path: '/teacher/attendance', icon: ClipboardList, label: 'Fill' },
-    { path: '/teacher/viewClassAttendance', icon: ClipboardList, label: 'View' },
+    { path: '/teacher/attendance', icon: ClipboardList, label: 'Fill Attendance' },
+    { path: '/teacher/viewClassAttendance', icon: ClipboardList, label: 'View Attendance' },
     { path: '/teacher/marks', icon: LineChart, label: 'Marks' },
     { path: '/teacher/lessonPlan', icon: BookOpen, label: 'Plan' },
     { path: '/teacher/studentPerformance', icon: GraduationCap, label: 'Student' },
-    { path: '/teacher/announcements', icon: Speaker, label: 'Alerts' }
+    { path: '/teacher/announcements', icon: Speaker, label: 'Announcements' }
   ];
 
   useEffect(() => {

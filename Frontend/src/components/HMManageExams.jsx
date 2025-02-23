@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Clock, Book, User, Trash2, Plus, Award, MapPin, Building, Phone,Download,Speaker } from "lucide-react";
 import axios from "axios";
 
+const baseurl = import.meta.env.VITE_BASE_URL;
+
 function ManageExamsAndInstructors() {
   // State for exams
   const [exams, setExams] = useState([]);
@@ -69,7 +71,7 @@ function ManageExamsAndInstructors() {
 
     try {
        console.log(newAnnouncements);
-        await axios.post("http://localhost:8080/api/v1/announcements", newAnnouncements);
+        await axios.post(`${baseurl}/announcements`, newAnnouncements);
         setMessage("Announcements added successfully!");
         setTimeout(() => setMessage(""), 3000);
     } catch (error) {
@@ -143,7 +145,7 @@ function ManageExamsAndInstructors() {
 
   const fetchFacultyData = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/teachers/getfaculty");
+      const response = await axios.get(`${baseurl}/teachers/getfaculty`);
       // Store complete faculty data
       setFacultyData(response.data.faculty);
       // Get unique faculty names
@@ -160,7 +162,7 @@ function ManageExamsAndInstructors() {
   // Fetch exams
   useEffect(() => {
     setLoadingExams(true);
-    fetch("http://localhost:8080/api/v1/exams/getexam")
+    fetch(`${baseurl}/exams/getexam`)
       .then(response => response.json())
       .then(data => setExams(data))
       .catch(error => console.error("Error:", error))
