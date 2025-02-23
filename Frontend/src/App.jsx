@@ -6,7 +6,7 @@ import {BrowserRouter,Route, Routes} from "react-router-dom";
 import Login from './components/Login';
 import Register from './components/Register';
 import NavBar from './components/NavBar';
-import TeacherDashboard from './components/teacherDashboard.jsx';
+import TeacherDashboard from './components/TeacherDashboard.jsx';
 import TeacherProfile from './components/TeacherProfile.jsx';
 import TeacherAttendance from './components/TeacherAttendance.jsx';
 import TeacherMarks from './components/TeacherMarks.jsx';
