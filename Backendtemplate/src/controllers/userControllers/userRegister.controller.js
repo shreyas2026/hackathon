@@ -65,15 +65,18 @@ const registerUser = asyncHandler(async(req, res) => {
     // Set cookies
     const options = {
         httpOnly: true,
-        secure: true
-    };
+        secure: true,        // Keep this for HTTPS
+        sameSite: 'none'     // Critical for cross-site cookies
+      };
+      
 
-    return res
-        .status(201)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .cookie("role", createdUser.role, options)
-        .json(new ApiResponse(201, { user: createdUser }, "User registered successfully"));
+      return res
+      .status(201)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .cookie("role", createdUser.role, options)
+      .json(new ApiResponse(201, { user: createdUser }, "User registered successfully"));
+    
 });
 
 export { registerUser }
