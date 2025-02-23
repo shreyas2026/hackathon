@@ -71,9 +71,50 @@ export const getClassDetailsWithAttendance = async (req, res) => {
         console.error("Error in getClassDetailsWithAttendance:", error);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
+};  
+export const getTodaysAttendanceReport = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const classes = ["8A", "8B", "9A", "9B", "10A", "10B"];
+        let report = [];
+        let totalStudents = 0;
+        let totalPresent = 0;
+
+        for (let cls of classes) {
+            // Get all students in the class
+            const students = await Student.find({ class: cls });
+            const studentIds = students.map(student => student._id);
+
+            // Get attendance records for today
+            const presentStudents = await StudentAttendance.countDocuments({
+                studentId: { $in: studentIds },
+                date: { $gte: today, $lt: new Date(today.getTime() + 86400000) },
+                status: "true"
+            });
+
+            totalStudents += students.length;
+            totalPresent += presentStudents;
+
+            report.push({
+                class: cls,
+                totalStudents: students.length,
+                totalPresent: presentStudents
+            });
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            totalStudents, 
+            totalPresent, 
+            report 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
 };
-
-
 
 
 

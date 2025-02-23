@@ -19,6 +19,7 @@ import StudentListManager from './components/StudentListManager.jsx';
 import TeacherLessonPlan from './components/TeacherLessonPlan.jsx';
 import TeacherUpcomingExams from './components/teacherUpcomingExams.jsx';
 import ViewAttendance from './components/ViewAttendance.jsx'
+import AttendanceReport from './components/AttendanceReport.jsx';
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="manageTeachers" element={<HMManageTeachers />} /> 
           <Route path="manageExams" element={<ManageExamsAndInvigilators/>}/>
           <Route path="manageTimeTable" element={<HMManageTimeTable/>}/>
+          <Route path="todaysAttendace" element={<AttendanceReport/>}/> 
         </Route>
 
       </Routes>

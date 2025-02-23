@@ -44,6 +44,14 @@ function HMNavBar() {
                 <Calendar className="w-5 h-5" />
                 <span>Manage TimeTable</span>
               </NavLink>
+
+              <NavLink 
+                to="/hm/todaysAttendace" 
+                className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
+              >
+                <Calendar className="w-5 h-5" />
+                <span>Todays Attendance</span>
+              </NavLink>
             </div>
           </div>
         </div>

@@ -22,10 +22,10 @@ const ViewAttendance = () => {
   const classes = [
     { id: "1", name: "10A" },
     { id: "2", name: "10B" },
-    { id: "3", name: "10C" },
-    { id: "4", name: "9A" },
-    { id: "5", name: "9B" },
-    { id: "6", name: "9C" },
+    { id: "3", name: "9A" },
+    { id: "4", name: "9B" },
+    { id: "5", name: "8A" },
+    { id: "6", name: "8B" },
   ];
 
   const fetchAttendance = async () => {

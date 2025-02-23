@@ -61,13 +61,13 @@ function NavBar() {
                 <span className="whitespace-nowrap">Student</span>
               </NavLink>
 
-              <NavLink 
+              {/* <NavLink 
                 to="/teacher/upcomingExams" 
                 className={({ isActive }) => isActive ? activeClassName : inactiveClassName}
               >
                 <Calendar className="w-5 h-5" />
                 <span className="whitespace-nowrap">Upcoming Exams</span>
-              </NavLink>
+              </NavLink> */}
             </div>
           </div>
         </div>

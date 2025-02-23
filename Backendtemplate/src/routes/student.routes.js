@@ -7,6 +7,7 @@ import { getEnrolledSubjects } from '../controllers/studentControllers/studentLi
 import {Subject} from '../models/Subject.models.js'; 
 import { getClassDetailsWithAttendance } from '../controllers/studentControllers/studentattd.controllers.js';
 import { addStudentAttendance } from '../controllers/studentControllers/studentattd.controllers.js';
+import {getTodaysAttendanceReport} from '../controllers/studentControllers/studentattd.controllers.js';
 const router = express.Router();
 
 
@@ -31,6 +32,7 @@ router.get('/subjects', async (req, res) => {
 router.post('/addMarks', addMarks);
 router.post("/getstudents",getStudentListByClass)
 router.post("/addattendance",addStudentAttendance)
+router.get('/getTodaysAttendanceReport', getTodaysAttendanceReport)
 router.get('/getStudentById/:studentId',getStudentById)
 router.get('/getExistingMarksByStudentId/:studentId',getExistingMarksByStudentId)
 router.get('/getStudentAttendanceByStudentId/:studentId',getStudentAttendanceByStudentId)

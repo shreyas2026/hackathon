@@ -37,12 +37,13 @@ const TeacherMarks = () => {
   });
 
   // Generate class options
-  const classOptions = Array.from({ length: 20 }, (_, i) => {
-    const grade = Math.floor(i / 2) + 1;
+  const classOptions = Array.from({ length: 6 }, (_, i) => {
+    const grade = Math.floor(i / 2) + 8; // Start from grade 8
     const section = i % 2 === 0 ? 'A' : 'B';
     const value = `${grade}${section}`;
     return { value, label: `Class ${value}` };
-  });
+  }); 
+  
 
   // Initialize marks data structure when students change
   useEffect(() => {
