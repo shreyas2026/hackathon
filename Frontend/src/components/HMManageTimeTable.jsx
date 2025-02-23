@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import "./TimeTable.css";
 
 
 const baseurl = import.meta.env.VITE_BASE_URL;
