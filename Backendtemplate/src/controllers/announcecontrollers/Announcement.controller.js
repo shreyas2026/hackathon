@@ -19,7 +19,7 @@ export const createAnnouncement= async (req, res) => {
 // Get all announcements
 export const getAnnouncements = async (req, res) => {
     try {
-        const announcements = await Announcement.find().sort({ createdAt: -1 });
+        const announcements = await Announcement.find().sort({ createdAt:1});
 
         if (!announcements || announcements.length === 0) {
             return res.status(404).json({ message: "No announcements found." });
