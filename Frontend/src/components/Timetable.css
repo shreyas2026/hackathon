@@ -2,6 +2,7 @@
 .timetable-management-container {
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 20px;
   padding: 20px;
   font-family: 'Poppins', sans-serif;
   background-color: #f9fafc;
@@ -278,3 +279,4 @@
 .saturday-cell {
   cursor: default;
 }
+
