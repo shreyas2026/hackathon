@@ -4,7 +4,7 @@
 [![Stars](https://img.shields.io/github/stars/Visheshpgowda/Hackthon?style=social)](https://github.com/Visheshpgowda/Hackthon)
 
 <div align="center">
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKdAVNJnkY8n2NovBUhlijTSDF4RH7UQizDA&s" alt="Project Banner">
+  <img src="https://media.istockphoto.com/id/1470617656/vector/ai-artificial-intelligence-chipset-on-circuit-board-in-futuristic-concept-suitable-for.jpg?s=612x612&w=0&k=20&c=_wC-pphyNI2muaUHG4N9JuYXxJEMDuzx56Dvzr8ZDUk=" alt="Project Banner">
   
   A comprehensive school management system built with React and Node.js, designed to streamline educational operations.
 
@@ -104,7 +104,7 @@ CLIENT_URL=http://localhost:5173
 
 <div align="center">
   <h3>Dashboard View</h3>
-  <img src="./WhatsApp Image 2025-02-23 at 23.23.10_232d2724.jpg" alt="Dashboard Screenshot" width="800">
+  <img src="./dashboard.png" alt="Dashboard Screenshot" width="800">
   
   <h3>Attendance Management</h3>
   <img src="./dash2.jpg" alt="Attendance Management" width="800">
@@ -136,7 +136,7 @@ CLIENT_URL=http://localhost:5173
 ### Vishesh P Gowda
 - 📧 Email: [vishesh.is22@bmsce.ac.in](mailto:vishesh.is22@bmsce.ac.in)
 - 📱 Phone: 9481262426
-- 🎓 Role: Project Lead & DevOps
+- 🎓 Role: Backend Developer
 
 ## 📜 License
 
