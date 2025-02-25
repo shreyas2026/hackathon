@@ -75,7 +75,7 @@ const PrimarySchoolProfile = () => {
               Karnataka State Board
             </span>
             <span className="px-3 py-1 bg-purple-700 rounded-full text-purple-200">
-              ISO 9001 Certified
+              Recognised BY Govt Of Karnataka
             </span>
           </div>
           <h2 className="text-2xl font-semibold text-gray-300 mb-2">
