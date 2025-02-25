@@ -325,7 +325,7 @@ const LandingPage = () => {
       </motion.section>
 
       {/* About Us Section - Team Photo Removed */}
-      // About Us Section with Team Photos and Animations
+      {/*About Us Section with Team Photos and Animations*/}
       <motion.section
   id="about"
   className="py-16 bg-gray-800"
