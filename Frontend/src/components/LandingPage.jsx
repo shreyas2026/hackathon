@@ -17,6 +17,23 @@ import shreyas from "../../public/shreays.jpg";
 import somi from "../../public/somi.jpg";
 import vishesh from "../../public/vishesh.jpg";
 import prajwal from "../../public/prajwal.jpg";
+
+import { motion } from "framer-motion";
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.98 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { 
+      duration: 1.2,
+      ease: [0.25, 0.1, 0.25, 1], // cubic-bezier for a smooth entrance
+      staggerChildren: 0.1,
+      when: "beforeChildren"
+    } 
+  }
+};
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -114,8 +131,13 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center">
+      <motion.section
+  className="py-16 md:py-24"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={sectionVariants}
+>        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-12 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-100 leading-tight mb-6">
               Empowering Teachers, Enhancing Education
@@ -146,11 +168,17 @@ const LandingPage = () => {
             />
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 bg-gray-800">
-        <div className="container mx-auto px-6">
+      <motion.section
+  id="features"
+  className="py-16 bg-gray-800"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={sectionVariants}
+>        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-white mb-4">Comprehensive Features</h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -213,11 +241,17 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-16 bg-gray-900">
-        <div className="container mx-auto px-6">
+      <motion.section
+  id="benefits"
+  className="py-16 bg-gray-800"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={sectionVariants}
+>        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-white mb-4">Why Choose Edu-StreamLiners?</h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -288,12 +322,18 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* About Us Section - Team Photo Removed */}
       // About Us Section with Team Photos and Animations
-      <section id="about" className="py-16 bg-gray-800">
-  <div className="container mx-auto px-6">
+      <motion.section
+  id="about"
+  className="py-16 bg-gray-800"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={sectionVariants}
+>  <div className="container mx-auto px-6">
     <div className="text-center mb-16">
       <h2 className="text-3xl font-bold text-white mb-4">About Edu-StreamLiners</h2>
       <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -328,7 +368,7 @@ const LandingPage = () => {
           <h4 className="text-xl font-bold text-white">Prajwal P Shetti</h4>
 <p className="text-blue-400 mb-4">Full-Stack Developer</p>
 <p className="text-gray-300 text-sm">
-  Full-stack developer with a strong grasp of UI design and problem-solving, creating seamless web experiences.
+Full-stack developer with strong problem-solving skills, building efficient web applications.
 </p>
 
           <div className="flex mt-4 space-x-3 justify-center">
@@ -510,11 +550,19 @@ const LandingPage = () => {
       </div>
     </div>
   </div>
-</section>
+</motion.section>
+
+
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 bg-gray-900">
-        <div className="container mx-auto px-6">
+      <motion.section
+  id="testimonials"
+  className="py-16 bg-gray-800"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={sectionVariants}
+>        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-white mb-4">What Educators Are Saying</h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -592,7 +640,7 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Call to Action Section */}
       <section className="py-20 bg-gradient-to-r from-blue-700 to-blue-900 text-white">
@@ -642,7 +690,7 @@ const LandingPage = () => {
             </div>
             <div>
               <h4 className="text-lg font-semibold mb-4">Contact</h4>
-              <p className="text-gray-400">Email: info@edustreamliners.com</p>
+              <p className="text-gray-400">Email: shettiprajwal04@gmail.com</p>
               <p className="text-gray-400">Phone: +91 9380005468</p>
               <div className="flex space-x-4 mt-4">
                 <a href="#" className="text-gray-400 hover:text-white transition">
