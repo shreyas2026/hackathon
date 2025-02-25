@@ -60,7 +60,7 @@ const NavBar = () => {
       });
       if (response.ok) {
         setToast({ message: 'Logged out', type: 'success' });
-        setTimeout(() => navigate('/'), 1000);
+        setTimeout(() => navigate('/'), 0.6);
       }
     } catch (error) {
       setToast({ message: 'Logout failed', type: 'error' });

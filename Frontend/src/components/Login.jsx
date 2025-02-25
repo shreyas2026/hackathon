@@ -16,16 +16,16 @@ function Login() {
 
   const getUserProfile = async () => {
     try {
-      const response = await axios.get(`${baseurl}/users/getProfile`, {             
+      const response = await axios.get(`${baseurl}/users/getProfile`, {
         withCredentials: true,
         headers: {
           "Content-Type": 'application/json'
         },
       });
-      
+
       console.log(response.data);
       const userRole = response.data.data.user.role;
-      
+
       // Redirect based on role
       if (userRole === "Headmaster") {
         navigate("/hm");
@@ -33,7 +33,7 @@ function Login() {
         navigate("/teacher");
       }
       // Add other role redirections if needed
-      
+
     } catch (error) {
       console.error("Error fetching user profile:", error);
       setError("Failed to fetch user profile");
@@ -47,8 +47,8 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${baseurl}/users/login`, 
-        { email, name, password }, 
+      const response = await axios.post(`${baseurl}/users/login`,
+        { email, name, password },
         {
           withCredentials: true,
           headers: {
@@ -56,10 +56,10 @@ function Login() {
           },
         }
       );
-      
+
       setSuccess(response.data.message || "Logged in successfully!");
       console.log("User Data:", response.data.data.user);
-      
+
       // After successful login, get user profile and redirect
       await getUserProfile();
 
@@ -72,11 +72,11 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 overflow-hidden">
+    <div className="min-h-screen relative bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute -top-20 -left-20 w-80 h-80 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full opacity-30 animate-pulse"></div>
-        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-gradient-to-br from-pink-500 to-yellow-500 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute -top-20 -left-20 w-80 h-80 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-gradient-to-br from-pink-600 to-yellow-600 rounded-full opacity-30 animate-pulse"></div>
         <div className="absolute top-10 right-10 text-white opacity-20">
           <GraduationCap className="w-32 h-32" />
         </div>
@@ -87,36 +87,36 @@ function Login() {
 
       {/* Centered Form Container */}
       <div className="flex items-center justify-center min-h-screen px-4">
-        <div className="relative z-10 w-full max-w-md p-8 bg-white rounded-3xl shadow-2xl">
+        <div className="relative z-10 w-full max-w-md p-8 bg-gray-800 rounded-3xl shadow-2xl">
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center transform hover:rotate-6 transition-transform duration-500">
               <LogIn className="w-10 h-10 text-white" />
             </div>
-            <h2 className="text-3xl font-extrabold text-gray-900">Sign In</h2>
-            <p className="mt-2 text-sm text-gray-600">Access your EduManage Pro portal</p>
+            <h2 className="text-3xl font-extrabold text-white">Sign In</h2>
+            <p className="mt-2 text-sm text-gray-300">Access your EduManage Pro portal</p>
           </div>
 
           {error && (
-            <div className="flex items-center p-4 mb-4 bg-red-50 border-l-4 border-red-500 rounded-md">
+            <div className="flex items-center p-4 mb-4 bg-red-900 border-l-4 border-red-500 rounded-md">
               <div className="mr-3">
-                <GraduationCap className="w-5 h-5 text-red-500" />
+                <GraduationCap className="w-5 h-5 text-red-400" />
               </div>
-              <p className="text-red-700 text-sm">{error}</p>
+              <p className="text-red-300 text-sm">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="flex items-center p-4 mb-4 bg-green-50 border-l-4 border-green-500 rounded-md">
+            <div className="flex items-center p-4 mb-4 bg-green-900 border-l-4 border-green-500 rounded-md">
               <div className="mr-3">
-                <GraduationCap className="w-5 h-5 text-green-500" />
+                <GraduationCap className="w-5 h-5 text-green-400" />
               </div>
-              <p className="text-green-700 text-sm">{success}</p>
+              <p className="text-green-300 text-sm">{success}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-200">Name</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="w-5 h-5 text-gray-400" />
@@ -127,14 +127,14 @@ function Login() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="Your Name"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-200">Email</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="w-5 h-5 text-gray-400" />
@@ -145,14 +145,14 @@ function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="your@email.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-200">Password</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="w-5 h-5 text-gray-400" />
@@ -163,7 +163,7 @@ function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="block w-full pl-10 pr-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="••••••••"
                 />
               </div>
@@ -187,11 +187,11 @@ function Login() {
 
           <div className="mt-6">
             <div className="flex items-center justify-center">
-              <span className="text-sm text-gray-600">Don't have an account?</span>
+              <span className="text-sm text-gray-300">Don't have an account?</span>
             </div>
             <div className="mt-4 flex justify-center">
               <button 
-                onClick={() => navigate("/register")} 
+                onClick={() => navigate("/register")}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition transform hover:-translate-y-1"
               >
                 <UserPlus className="w-5 h-5 mr-2" />

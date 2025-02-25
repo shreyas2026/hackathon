@@ -21,13 +21,14 @@ import TeacherUpcomingExams from './components/TeacherUpcomingExams.jsx'
 import ViewAttendance from './components/ViewAttendance.jsx'
 import AttendanceReport from './components/AttendanceReport.jsx';
 import Announcements from './components/TeacherAnnouncement.jsx';
-
+import LandingPage from './components/LandingPage.jsx'
 
 function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
-        <Route path="/" element={<Login />} />
+      <Route path="/" element={<LandingPage />} /> 
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/navbar" element={<NavBar />} />
         <Route path="/teacher" element={<TeacherDashboard />}>

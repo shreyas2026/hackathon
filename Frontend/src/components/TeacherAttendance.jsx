@@ -84,9 +84,22 @@ const TeacherAttendance = () => {
     XLSX.writeFile(wb, `attendance_template_${selectedClass}_${selectedDate.toISOString().split('T')[0]}.xlsx`);
   };
 
+  // Updated handleFileUpload to include normalization logic (provided in a previous update)
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
+
+    // Helper function to normalize attendance value
+    const normalizeAttendance = (value) => {
+      const trimmed = value ? value.toString().trim().toLowerCase() : "";
+      if (trimmed === "present" || trimmed === "p") {
+        return true;
+      }
+      if (trimmed === "absent" || trimmed === "a") {
+        return false;
+      }
+      return false;
+    };
 
     reader.onload = async (e) => {
       const data = new Uint8Array(e.target.result);
@@ -98,7 +111,7 @@ const TeacherAttendance = () => {
       const attendanceData = jsonData.reduce((acc, row) => {
         const student = students.find(s => s.roll_no === row['Roll No']);
         if (student) {
-          acc[student._id] = row['Attendance'].toLowerCase() === 'present';
+          acc[student._id] = normalizeAttendance(row['Attendance']);
         }
         return acc;
       }, {});
@@ -240,26 +253,37 @@ const TeacherAttendance = () => {
                 <Download className="w-5 h-5" />
                 Download Attendance Template
               </button>
+              {/* Helpful message regarding case insensitivity */}
+              <p className="text-sm text-gray-600 text-center">
+                Note: The attendance field is not case sensitive. You may enter "p" or "present" for present and "a" or "absent" for absent.
+              </p>
 
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-all duration-300">
-                <input
-                  type="file"
-                  accept=".xlsx,.xls"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer flex flex-col items-center gap-3"
-                >
-                  <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-2">
-                    <Upload className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <span className="font-medium text-gray-800">Upload Attendance File</span>
-                  <span className="text-sm text-gray-600">Click to select your Excel file</span>
-                </label>
-              </div>
+              {isSubmitting ? (
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                  <span className="font-medium text-gray-800">Processing file, please wait...</span>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-all duration-300">
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="cursor-pointer flex flex-col items-center gap-3"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-2">
+                      <Upload className="w-8 h-8 text-blue-600" />
+                    </div>
+                    <span className="font-medium text-gray-800">Upload Attendance File</span>
+                    <span className="text-sm text-gray-600">Click to select your Excel file</span>
+                  </label>
+                </div>
+              )}
             </div>
           )}
 
