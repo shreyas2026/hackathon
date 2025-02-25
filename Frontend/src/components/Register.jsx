@@ -69,7 +69,7 @@ function Register() {
       if (response.status === 200 || response.status === 201) {
         setMessage({
           type: "success", 
-          text: "Registration successful! Welcome to EduManage Pro. Redirecting to your dashboard..."
+          text: "Registration successful! Welcome to Edu-StreamLiners. Redirecting to your dashboard..."
         });
         console.log("Registration successful:", response.data);
         await getUserProfile();
@@ -110,7 +110,7 @@ function Register() {
             </div>
             <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
             <p className="mt-2 text-sm text-gray-300">
-              Register now to gain full access to the EduManage Pro portal and simplify your school management tasks.
+              Register now to gain full access to the Edu-StreamLiners portal and simplify your school management tasks.
             </p>
           </div>
 

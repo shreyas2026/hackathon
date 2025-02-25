@@ -93,7 +93,7 @@ function Login() {
               <LogIn className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-3xl font-extrabold text-white">Sign In</h2>
-            <p className="mt-2 text-sm text-gray-300">Access your EduManage Pro portal</p>
+            <p className="mt-2 text-sm text-gray-300">Access your Edu-StreamLiners portal</p>
           </div>
 
           {error && (
