@@ -4,7 +4,7 @@
 [![Stars](https://img.shields.io/github/stars/Visheshpgowda/Hackthon?style=social)](https://github.com/Visheshpgowda/Hackthon)
 
 <div align="center">
-  <img src="https://media.istockphoto.com/id/1470617656/vector/ai-artificial-intelligence-chipset-on-circuit-board-in-futuristic-concept-suitable-for.jpg?s=612x612&w=0&k=20&c=_wC-pphyNI2muaUHG4N9JuYXxJEMDuzx56Dvzr8ZDUk=" alt="Project Banner">
+  <img src="./dashboard.png" alt="Project Banner">
   
   A comprehensive school management system built with React and Node.js, designed to streamline educational operations.
 
@@ -103,8 +103,8 @@ CLIENT_URL=http://localhost:5173
 ## 📱 Screenshots
 
 <div align="center">
-  <h3>Dashboard View</h3>
-  <img src="./dashboard.png" alt="Dashboard Screenshot" width="800">
+  <h3>Features View</h3>
+  <img src="./features.png" alt="Dashboard Screenshot" width="800">
   
   <h3>Attendance Management</h3>
   <img src="./dash2.jpg" alt="Attendance Management" width="800">
