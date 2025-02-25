@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 
 const LandingPage = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       {/* Header / Navigation Bar */}
@@ -61,12 +63,51 @@ const LandingPage = () => {
               </li>
             </ul>
           </nav>
-          <button className="md:hidden text-gray-300">
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden text-gray-300 focus:outline-none"
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
             </svg>
           </button>
         </div>
+        {isMenuOpen && (
+          <nav className="md:hidden bg-gray-900 px-6 py-4">
+            <ul className="flex flex-col space-y-4">
+              <li>
+                <a href="#features" className="text-gray-300 hover:text-blue-400 transition" onClick={() => setIsMenuOpen(false)}>
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#benefits" className="text-gray-300 hover:text-blue-400 transition" onClick={() => setIsMenuOpen(false)}>
+                  Benefits
+                </a>
+              </li>
+              <li>
+                <a href="#about" className="text-gray-300 hover:text-blue-400 transition" onClick={() => setIsMenuOpen(false)}>
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="#testimonials" className="text-gray-300 hover:text-blue-400 transition" onClick={() => setIsMenuOpen(false)}>
+                  Testimonials
+                </a>
+              </li>
+              <li>
+                <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition" onClick={() => setIsMenuOpen(false)}>
+                  Register
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-2 px-4 rounded-md transition" onClick={() => setIsMenuOpen(false)}>
+                  Login
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        )}
       </header>
 
       {/* Hero Section */}
@@ -246,7 +287,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* About Us Section */}
+      {/* About Us Section - Team Photo Removed */}
       <section id="about" className="py-16 bg-gray-800">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
@@ -255,21 +296,18 @@ const LandingPage = () => {
               Driven by firsthand experience and technical expertise to transform education management.
             </p>
           </div>
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-12">
-              <img src="/api/placeholder/500/300" alt="Team" className="rounded-lg shadow-lg" />
-            </div>
-            <div className="md:w-1/2">
-              <h3 className="text-2xl font-semibold text-white mb-6">Our Mission</h3>
-              <p className="text-gray-300 mb-6">
+          <div className="flex flex-col items-center">
+            <div className="w-full">
+              <h3 className="text-2xl font-semibold text-white mb-6 text-center">Our Mission</h3>
+              <p className="text-gray-300 mb-6 text-center">
                 At Edu-StreamLiners, we're passionate about freeing teachers from administrative burdens so they can focus on what they do best – inspiring and educating students. With team members who have firsthand experience in the education sector, we understand the challenges educators face every day.
               </p>
-              <p className="text-gray-300 mb-6">
+              <p className="text-gray-300 mb-6 text-center">
                 Our team combines deep educational insights with technical expertise in computer science to create practical solutions that make a real difference in schools across diverse environments.
               </p>
-              <div className="bg-gray-700 p-6 rounded-lg border-l-4 border-blue-400">
-                <h4 className="text-lg font-semibold text-white mb-2">Our Team</h4>
-                <p className="text-gray-300">
+              <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600 max-w-md mx-auto">
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">Our Team</h4>
+                <p className="text-gray-700">
                   - Prajwal P Shetti<br />
                   - Shreyas D K<br />
                   - Somanath Mikali<br />
@@ -374,7 +412,7 @@ const LandingPage = () => {
             <Link to="/register" className="bg-white text-blue-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-md transition">
               Register Now
             </Link>
-            <Link to="/" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-700 font-bold py-3 px-8 rounded-md transition">
+            <Link to="/login" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-700 font-bold py-3 px-8 rounded-md transition">
               Login
             </Link>
           </div>
