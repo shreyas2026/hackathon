@@ -2,43 +2,56 @@ import { LessonPlan } from '../../models/LessonPlan.models.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
+import { buildLessonPlanPrompt } from '../../utils/lessonPhraser.js';
+import { GoogleGenAI } from "@google/genai";
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+async function rephrase(content) {
+    try {
+      const response = await ai.models.generateContent({
+          model: "gemini-2.0-flash",
+          contents: content,
+        });
+        console.log(response.text);
+        let clean = response.text.replace(/```json|```/g, '').trim();  
+        return clean
+    } catch (error) {
+      console.error("Error rephrasing content:", error);
+      throw error; // Rethrow the error to be handled by the caller 
+    }
+  }
 
 // Create new lesson plan
 export const createLessonPlan = asyncHandler(async (req, res) => {
-    console.log("came to create lesson plan");
-    
-    const {
-        title,
-        subject,
-        grade,
-        section,
-        date,
-        duration,
-        learningObjectives,
-        prerequisiteKnowledge,
-        teachingMethods,
-        materials,
-        lessonStructure,
-        homework,
-        differentiation,
-        reflection,
-        status
-    } = req.body;
+    const aiResponseText = await rephrase(buildLessonPlanPrompt(req.body));
+console.log("came to create lesson plan from AI", aiResponseText);
 
-    // Validation
-    if (!title || !subject || !grade || !section || !date || !duration) {
-        throw new ApiError(400, "Missing required fields");
+let lessonData;
+try {
+    lessonData = JSON.parse(aiResponseText); // Ensure the response is a proper JSON string
+} catch (err) {
+    console.error("Failed to parse AI response:", err);
+    throw new ApiError(500, "Invalid AI response format");
+}
+
+// Validate required fields again (in case AI messed up)
+const requiredFields = ["title", "subject", "grade", "section", "date", "duration"];
+for (const field of requiredFields) {
+    if (!lessonData[field]) {
+        throw new ApiError(400, `Missing required field: ${field}`);
     }
+}
 
-    // Create lesson plan
-    const lessonPlan = await LessonPlan.create({
-        ...req.body,
-        teacher: req.user._id
-    });
+// Add teacher ID to the lesson data
+lessonData.teacher = req.user._id;
 
-    return res.status(201).json(
-        new ApiResponse(201, lessonPlan, "Lesson plan created successfully")
-    );
+// Save to DB
+const lessonPlan = await LessonPlan.create(lessonData);
+
+return res.status(201).json(
+    new ApiResponse(201, lessonPlan, "Lesson plan created successfully")
+);
 });
 
 // Get all lesson plans for a teacher with filters
