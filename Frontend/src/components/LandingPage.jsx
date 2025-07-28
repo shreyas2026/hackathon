@@ -351,10 +351,10 @@ const LandingPage = () => {
         </p>
       </div>
       
-      <h3 className="text-2xl font-semibold text-white mb-10 text-center">Meet Our Team</h3>
+{/*       <h3 className="text-2xl font-semibold text-white mb-10 text-center">Meet Our Team</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
-        {/* Team Member 1 */}
+       
         <div 
           className="bg-gray-700 rounded-lg overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl p-6 text-center"
         >
@@ -390,7 +390,7 @@ Full-stack developer with strong problem-solving skills, building efficient web 
           </div>
         </div>
         
-        {/* Team Member 2 */}
+        
         <div 
           className="bg-gray-700 rounded-lg overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl p-6 text-center"
         >
@@ -426,7 +426,7 @@ Full-stack developer with strong problem-solving skills, building efficient web 
 </div>
         </div>
         
-        {/* Team Member 3 */}
+       
         <div 
           className="bg-gray-700 rounded-lg overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl p-6 text-center"
         >
@@ -463,7 +463,7 @@ Full-stack developer with strong problem-solving skills, building efficient web 
 </div>
         </div>
         
-        {/* Team Member 4 */}
+       
         <div 
           className="bg-gray-700 rounded-lg overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl p-6 text-center"
         >
@@ -499,7 +499,7 @@ Full-stack developer with strong problem-solving skills, building efficient web 
   </a>
 </div>
         </div>
-      </div>
+      </div> */}
       
       {/* Core Values */}
       <div className="mt-20 w-full">
